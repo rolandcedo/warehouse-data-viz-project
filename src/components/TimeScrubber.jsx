@@ -45,7 +45,7 @@ const TimeScrubber = () => {
   ];
 
   return (
-    <div style={{ background: 'white', border: 'none', borderBottom: `1px solid ${C.neutral[200]}`, borderRadius: 0, padding: `${sp.sm} ${sp.lg}` }}>
+    <div style={{ background: 'white', border: 'none', borderBottom: `1px solid ${C.neutral[300]}`, borderRadius: 0, padding: `${sp.sm} ${sp.lg}` }}>
       {/* Scenario Mode Banner - Manual Scenario */}
       {scenarioMode && scenarioSource === 'manual' && activeScenario && (
         <div style={{
