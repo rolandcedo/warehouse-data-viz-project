@@ -280,7 +280,7 @@ const ChatDrawer = () => {
         borderBottom: `1px solid ${C.neutral[800]}`
       }}>
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '0.875rem',
           fontWeight: 600,
           color: C.neutral[50],
           margin: 0
@@ -312,7 +312,7 @@ const ChatDrawer = () => {
             }}
           >
             <div style={{
-              fontSize: '11px',
+              fontSize: '0.75rem',
               fontWeight: 600,
               color: msg.role === 'user' ? 'white' : C.neutral[700],
               textTransform: 'uppercase',
@@ -321,7 +321,7 @@ const ChatDrawer = () => {
               {msg.role === 'user' ? 'You' : 'Assistant'}
             </div>
             <div style={{
-              fontSize: '13px',
+              fontSize: '0.875rem',
               color: msg.role === 'user' ? 'white' : C.neutral[800],
               lineHeight: 1.5,
               whiteSpace: 'pre-wrap'
@@ -355,7 +355,7 @@ const ChatDrawer = () => {
               background: 'transparent',
               border: 'none',
               color: C.neutral[200],
-              fontSize: '13px',
+              fontSize: '0.875rem',
               fontFamily: 'inherit',
               resize: 'none',
               outline: 'none'
@@ -429,7 +429,7 @@ const ChatDrawer = () => {
           {/* Right: Character count */}
           <div style={{
             color: C.neutral[400],
-            fontSize: '12px'
+            fontSize: '0.75rem'
           }}>
             {charCount} / {charLimit.toLocaleString()}
           </div>
@@ -456,7 +456,7 @@ const ChatHistoryDrawer = ({ chatHistory, onSelectChat }) => {
         borderBottom: `1px solid ${C.neutral[800]}`
       }}>
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '0.875rem',
           fontWeight: 600,
           color: C.neutral[50],
           margin: 0
@@ -476,7 +476,7 @@ const ChatHistoryDrawer = ({ chatHistory, onSelectChat }) => {
             padding: sp.lg,
             textAlign: 'center',
             color: C.neutral[500],
-            fontSize: '13px'
+            fontSize: '0.875rem'
           }}>
             No previous chats
           </div>
@@ -506,7 +506,7 @@ const ChatHistoryDrawer = ({ chatHistory, onSelectChat }) => {
               }}
             >
               <div style={{
-                fontSize: '13px',
+                fontSize: '0.875rem',
                 fontWeight: 500,
                 color: C.neutral[200],
                 marginBottom: 4,
@@ -517,7 +517,7 @@ const ChatHistoryDrawer = ({ chatHistory, onSelectChat }) => {
                 {chat.title || 'Untitled Chat'}
               </div>
               <div style={{
-                fontSize: '11px',
+                fontSize: '0.75rem',
                 color: C.neutral[500]
               }}>
                 {chat.timestamp || 'Recent'}
@@ -547,7 +547,7 @@ const FavoritesDrawer = ({ favorites, onSelectChat }) => {
         borderBottom: `1px solid ${C.neutral[800]}`
       }}>
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '0.875rem',
           fontWeight: 600,
           color: C.neutral[50],
           margin: 0
@@ -567,7 +567,7 @@ const FavoritesDrawer = ({ favorites, onSelectChat }) => {
             padding: sp.lg,
             textAlign: 'center',
             color: C.neutral[500],
-            fontSize: '13px'
+            fontSize: '0.875rem'
           }}>
             No favorite chats yet
           </div>
@@ -602,7 +602,7 @@ const FavoritesDrawer = ({ favorites, onSelectChat }) => {
               <Star style={{ width: 14, height: 14, color: C.yellow[400], fill: C.yellow[400], flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontSize: '13px',
+                  fontSize: '0.875rem',
                   fontWeight: 500,
                   color: C.neutral[200],
                   marginBottom: 4,
@@ -613,7 +613,7 @@ const FavoritesDrawer = ({ favorites, onSelectChat }) => {
                   {chat.title || 'Untitled Chat'}
                 </div>
                 <div style={{
-                  fontSize: '11px',
+                  fontSize: '0.75rem',
                   color: C.neutral[500]
                 }}>
                   {chat.timestamp || 'Recent'}
@@ -644,7 +644,7 @@ const SettingsDrawer = () => {
         borderBottom: `1px solid ${C.neutral[800]}`
       }}>
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '0.875rem',
           fontWeight: 600,
           color: C.neutral[50],
           margin: 0
@@ -661,7 +661,7 @@ const SettingsDrawer = () => {
       }}>
         <div style={{
           color: C.neutral[400],
-          fontSize: '13px',
+          fontSize: '0.875rem',
           textAlign: 'center',
           paddingTop: sp.lg
         }}>
@@ -689,7 +689,7 @@ const HelpDrawer = () => {
         borderBottom: `1px solid ${C.neutral[800]}`
       }}>
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '0.875rem',
           fontWeight: 600,
           color: C.neutral[50],
           margin: 0
@@ -706,17 +706,17 @@ const HelpDrawer = () => {
       }}>
         <div style={{
           color: C.neutral[300],
-          fontSize: '13px',
+          fontSize: '0.875rem',
           lineHeight: 1.6
         }}>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 
           <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
-          <h4 style={{ color: C.neutral[50], fontSize: '14px', fontWeight: 600, marginTop: sp.lg, marginBottom: sp.sm }}>Getting Started</h4>
+          <h4 style={{ color: C.neutral[50], fontSize: '0.875rem', fontWeight: 600, marginTop: sp.lg, marginBottom: sp.sm }}>Getting Started</h4>
           <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
 
-          <h4 style={{ color: C.neutral[50], fontSize: '14px', fontWeight: 600, marginTop: sp.lg, marginBottom: sp.sm }}>Common Questions</h4>
+          <h4 style={{ color: C.neutral[50], fontSize: '0.875rem', fontWeight: 600, marginTop: sp.lg, marginBottom: sp.sm }}>Common Questions</h4>
           <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
         </div>
       </div>

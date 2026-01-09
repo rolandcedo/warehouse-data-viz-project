@@ -27,6 +27,23 @@ export const sp = {
   xxl: '48px'
 };
 
+// Breakpoints for responsive design
+export const breakpoints = {
+  mobile: 768,
+  tablet: 1024,
+  desktop: 1440,
+  widePanel: 1600,
+  ultrawide: 2200
+};
+
+// Media query helpers
+export const media = {
+  mobile: `@media (max-width: ${breakpoints.mobile - 1}px)`,
+  tablet: `@media (min-width: ${breakpoints.mobile}px) and (max-width: ${breakpoints.tablet - 1}px)`,
+  desktop: `@media (min-width: ${breakpoints.desktop}px)`,
+  ultrawide: `@media (min-width: ${breakpoints.ultrawide}px)`
+};
+
 // Font weights - Roboto family
 export const fontWeights = {
   thin: 100,      // Roboto Thin
@@ -47,7 +64,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1
    */
   display1: () => ({
-    fontSize: '80px',
+    fontSize: '5rem', // 80px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1,
     fontFamily: 'Roboto, sans-serif'
@@ -59,7 +76,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1.111
    */
   display2: () => ({
-    fontSize: '72px',
+    fontSize: '4.5rem', // 72px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1.111,
     fontFamily: 'Roboto, sans-serif'
@@ -71,7 +88,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1.125
    */
   display3: () => ({
-    fontSize: '64px',
+    fontSize: '4rem', // 64px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1.125,
     fontFamily: 'Roboto, sans-serif'
@@ -83,7 +100,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1.143
    */
   display4: () => ({
-    fontSize: '56px',
+    fontSize: '3.5rem', // 56px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1.143,
     fontFamily: 'Roboto, sans-serif'
@@ -95,7 +112,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1.167
    */
   display5: () => ({
-    fontSize: '48px',
+    fontSize: '3rem', // 48px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1.167,
     fontFamily: 'Roboto, sans-serif'
@@ -107,7 +124,7 @@ export const typography = {
    * Weight: Thin/Light (100), Line height: 1.2
    */
   display6: () => ({
-    fontSize: '40px',
+    fontSize: '2.5rem', // 40px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1.2,
     fontFamily: 'Roboto, sans-serif'
@@ -121,7 +138,7 @@ export const typography = {
    * Weight: Thin (100), Line height: 1
    */
   h1Large: () => ({
-    fontSize: '32px',
+    fontSize: '2rem', // 32px
     fontWeight: fontWeights.thin, // 100
     lineHeight: 1,
     fontFamily: 'Roboto, sans-serif'
@@ -133,7 +150,7 @@ export const typography = {
    * Weight: Light (300), Line height: 1.2
    */
   h1: () => ({
-    fontSize: '28px',
+    fontSize: '1.75rem', // 28px
     fontWeight: fontWeights.light, // 300
     lineHeight: 1.2,
     fontFamily: 'Roboto, sans-serif'
@@ -145,7 +162,7 @@ export const typography = {
    * Weight: Light (300), Line height: 1.3
    */
   h2: () => ({
-    fontSize: '24px',
+    fontSize: '1.5rem', // 24px
     fontWeight: fontWeights.light, // 300
     lineHeight: 1.3,
     fontFamily: 'Roboto, sans-serif'
@@ -157,7 +174,7 @@ export const typography = {
    * Weight: Regular (400), Line height: 1.5
    */
   h3: () => ({
-    fontSize: '18px',
+    fontSize: '1.125rem', // 18px
     fontWeight: fontWeights.regular, // 400
     lineHeight: 1.5,
     fontFamily: 'Roboto, sans-serif'
@@ -169,7 +186,7 @@ export const typography = {
    * Weight: Medium (500), Line height: 1.5
    */
   h4: () => ({
-    fontSize: '16px',
+    fontSize: '1rem', // 16px
     fontWeight: fontWeights.medium, // 500
     lineHeight: 1.5,
     fontFamily: 'Roboto, sans-serif'
@@ -178,7 +195,7 @@ export const typography = {
   // ===== BODY TEXT STYLES (Content, descriptions, UI text) =====
 
   /**
-   * Body Large - Large body text (16px)
+   * Body Large - Large body text (16px / 1rem)
    * Use for: Prominent paragraphs, feature descriptions
    * Options: { medium: boolean, italic: boolean }
    * Default: Regular (400), Non-italic
@@ -186,7 +203,7 @@ export const typography = {
   bodyLarge: (options = {}) => {
     const { medium = false, italic = false } = options;
     return {
-      fontSize: '16px',
+      fontSize: '1rem', // 16px
       fontWeight: medium ? fontWeights.medium : fontWeights.regular, // 500 : 400
       lineHeight: 1.5,
       fontStyle: italic ? 'italic' : 'normal',
@@ -195,7 +212,7 @@ export const typography = {
   },
 
   /**
-   * Body Default - Standard body text (14px)
+   * Body Default - Standard body text (14px / 0.875rem)
    * Use for: Primary content, standard paragraphs
    * Options: { medium: boolean, italic: boolean }
    * Default: Regular (400), Non-italic
@@ -203,7 +220,7 @@ export const typography = {
   body: (options = {}) => {
     const { medium = false, italic = false } = options;
     return {
-      fontSize: '14px',
+      fontSize: '0.875rem', // 14px
       fontWeight: medium ? fontWeights.medium : fontWeights.regular, // 500 : 400
       lineHeight: 1.5,
       fontStyle: italic ? 'italic' : 'normal',
@@ -212,7 +229,7 @@ export const typography = {
   },
 
   /**
-   * Body Small - Small body text (12px)
+   * Body Small - Small body text (12px / 0.75rem)
    * Use for: Secondary text, helper text, descriptions
    * Options: { medium: boolean, italic: boolean }
    * Default: Regular (400), Non-italic
@@ -220,7 +237,7 @@ export const typography = {
   bodySmall: (options = {}) => {
     const { medium = false, italic = false } = options;
     return {
-      fontSize: '12px',
+      fontSize: '0.75rem', // 12px
       fontWeight: medium ? fontWeights.medium : fontWeights.regular, // 500 : 400
       lineHeight: 1.5,
       fontStyle: italic ? 'italic' : 'normal',
@@ -231,36 +248,36 @@ export const typography = {
   // ===== SPECIALIZED TEXT STYLES =====
 
   /**
-   * Label - Form labels, field names (14px)
+   * Label - Form labels, field names (14px / 0.875rem)
    * Use for: Input labels, field identifiers
    * Weight: Medium (500)
    */
   label: () => ({
-    fontSize: '14px',
+    fontSize: '0.875rem', // 14px
     fontWeight: fontWeights.medium, // 500
     lineHeight: 1.5,
     fontFamily: 'Roboto, sans-serif'
   }),
 
   /**
-   * Caption - Small metadata text (12px)
+   * Caption - Small metadata text (12px / 0.75rem)
    * Use for: Timestamps, helper text, metadata
    * Weight: Medium (500)
    */
   caption: () => ({
-    fontSize: '12px',
+    fontSize: '0.75rem', // 12px
     fontWeight: fontWeights.medium, // 500
     lineHeight: 1.5,
     fontFamily: 'Roboto, sans-serif'
   }),
 
   /**
-   * Link - Hyperlink text (14px)
+   * Link - Hyperlink text (14px / 0.875rem)
    * Use for: Clickable links, navigation items
    * Weight: Regular (400)
    */
   link: () => ({
-    fontSize: '14px',
+    fontSize: '0.875rem', // 14px
     fontWeight: fontWeights.regular, // 400
     lineHeight: 1.5,
     fontFamily: 'Roboto, sans-serif',
@@ -294,10 +311,83 @@ export const spark = (n=12, b=50, v=20) =>
 // Global CSS styles
 export const styles = `
   * { box-sizing: border-box; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif; }
-  html { height: 100%; overflow: hidden; }
-  body { margin: 0; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif; background: ${C.neutral[900]}; overflow: hidden; height: 100%; }
+  html {
+    font-size: 100%; /* 1rem = 16px (browser default) */
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    margin: 0;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.875rem; /* 14px default body size */
+    line-height: 1.5;
+    background: ${C.neutral[900]};
+    overflow: hidden;
+    height: 100%;
+  }
   button { font-family: inherit; }
   div, span, p, h1, h2, h3, h4, h5, h6, label { font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+  /* Responsive Typography Classes */
+  .typo-display1 { font-size: 3rem; font-weight: 100; line-height: 1; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display1 { font-size: 4rem; } }
+  @media (min-width: 1440px) { .typo-display1 { font-size: 5rem; } }
+
+  .typo-display2 { font-size: 2.75rem; font-weight: 100; line-height: 1.111; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display2 { font-size: 3.5rem; } }
+  @media (min-width: 1440px) { .typo-display2 { font-size: 4.5rem; } }
+
+  .typo-display3 { font-size: 2.5rem; font-weight: 100; line-height: 1.125; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display3 { font-size: 3rem; } }
+  @media (min-width: 1440px) { .typo-display3 { font-size: 4rem; } }
+
+  .typo-display4 { font-size: 2.25rem; font-weight: 100; line-height: 1.143; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display4 { font-size: 2.75rem; } }
+  @media (min-width: 1440px) { .typo-display4 { font-size: 3.5rem; } }
+
+  .typo-display5 { font-size: 2rem; font-weight: 100; line-height: 1.167; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display5 { font-size: 2.5rem; } }
+  @media (min-width: 1440px) { .typo-display5 { font-size: 3rem; } }
+
+  .typo-display6 { font-size: 1.75rem; font-weight: 100; line-height: 1.2; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-display6 { font-size: 2rem; } }
+  @media (min-width: 1440px) { .typo-display6 { font-size: 2.5rem; } }
+
+  .typo-h1-large { font-size: 1.5rem; font-weight: 100; line-height: 1; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-h1-large { font-size: 1.75rem; } }
+  @media (min-width: 1440px) { .typo-h1-large { font-size: 2rem; } }
+
+  .typo-h1 { font-size: 1.375rem; font-weight: 300; line-height: 1.2; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-h1 { font-size: 1.5rem; } }
+  @media (min-width: 1440px) { .typo-h1 { font-size: 1.75rem; } }
+
+  .typo-h2 { font-size: 1.25rem; font-weight: 300; line-height: 1.3; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-h2 { font-size: 1.375rem; } }
+  @media (min-width: 1440px) { .typo-h2 { font-size: 1.5rem; } }
+
+  .typo-h3 { font-size: 1rem; font-weight: 400; line-height: 1.4; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-h3 { font-size: 1.0625rem; } }
+  @media (min-width: 1440px) { .typo-h3 { font-size: 1.125rem; } }
+
+  .typo-h4 { font-size: 0.9375rem; font-weight: 500; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-h4 { font-size: 1rem; } }
+
+  .typo-body-large { font-size: 0.9375rem; font-weight: 400; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-body-large { font-size: 1rem; } }
+
+  .typo-body { font-size: 0.875rem; font-weight: 400; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+  .typo-body-small { font-size: 0.75rem; font-weight: 400; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+
+  .typo-label { font-size: 0.8125rem; font-weight: 500; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-label { font-size: 0.875rem; } }
+
+  .typo-caption { font-size: 0.6875rem; font-weight: 500; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+  @media (min-width: 768px) { .typo-caption { font-size: 0.75rem; } }
+
+  .typo-link { font-size: 0.875rem; font-weight: 400; line-height: 1.5; font-family: 'Roboto', sans-serif; cursor: pointer; text-decoration: underline; }
+
+  .typo-medium { font-weight: 500; }
+  .typo-italic { font-style: italic; }
 
   .card {
     padding: ${sp.md};

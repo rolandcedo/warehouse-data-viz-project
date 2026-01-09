@@ -4,6 +4,7 @@ import { C, sp, typography } from '../styles/designSystem';
 import { ALERTS_DATA } from '../data/alertsData';
 import TabLayout from './TabLayout';
 import { Breadcrumb } from './UI/index';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 /**
  * ContextualSidepanel - 10K ft view: Analyze & Optimize
@@ -234,6 +235,7 @@ const FacilityActionsDropdown = () => {
  */
 const AlertDetailTab = ({ alert, onClose }) => {
   const alertData = ALERTS_DATA[alert.id] || alert;
+  const { isUltrawide } = useWindowSize();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -286,87 +288,196 @@ const AlertDetailTab = ({ alert, onClose }) => {
         paddingLeft: sp.xl,
         paddingRight: sp.xl
       }}>
-        {/* Description */}
-        <section style={{ marginBottom: sp.lg }}>
-          <h4 style={{
-            ...typography.caption(),
-            textTransform: 'uppercase',
-            color: C.neutral[500],
-            marginBottom: sp.sm
-          }}>
-            Description
-          </h4>
-          <p style={{ ...typography.body(), color: C.neutral[800], margin: 0 }}>
-            {alertData.msg}
-          </p>
-        </section>
-
-        {/* Predicted Impact */}
-        <section style={{ marginBottom: sp.lg }}>
-          <h4 style={{
-            ...typography.caption(),
-            textTransform: 'uppercase',
-            color: C.neutral[500],
-            marginBottom: sp.sm
-          }}>
-            Predicted Impact
-          </h4>
-          <div style={{ background: C.neutral[50], padding: sp.md, borderRadius: 6 }}>
-            <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
-              Occurs in: {alertData.time}
-            </p>
-            <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0, marginTop: sp.xs }}>
-              Confidence: {alertData.conf}%
-            </p>
-          </div>
-        </section>
-
-        {/* Contributing Factors */}
-        <section style={{ marginBottom: sp.lg }}>
-          <h4 style={{
-            ...typography.caption(),
-            textTransform: 'uppercase',
-            color: C.neutral[500],
-            marginBottom: sp.sm
-          }}>
-            Contributing Factors
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm }}>
-            <FactorCard icon={TrendingUp} title="Historical Pattern" value="3 similar events this quarter" />
-            <FactorCard icon={Clock} title="Time Constraint" value="Peak period (14:00-16:00)" />
-          </div>
-        </section>
-
-        {/* Recommendations */}
-        <section>
-          <h4 style={{
-            ...typography.caption(),
-            textTransform: 'uppercase',
-            color: C.neutral[500],
-            marginBottom: sp.sm
-          }}>
-            Recommendations
-          </h4>
+        {isUltrawide ? (
+          // TWO-COLUMN LAYOUT for ultra-wide screens
           <div style={{
             display: 'flex',
-            alignItems: 'start',
-            gap: sp.sm,
-            padding: sp.md,
-            background: C.purple[50],
-            border: `1px solid ${C.purple[200]}`,
-            borderRadius: 6
+            gap: sp.xl,
+            minHeight: '100%'
           }}>
-            <Lightbulb style={{ width: 18, height: 18, color: C.purple[600], flexShrink: 0 }} />
-            <div>
-              <p style={{ ...typography.bodySmall({ medium: true }), margin: 0, marginBottom: sp.xs }}>
-                Add 2 FTE to Pack Station
-              </p>
-              <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
-                Reassign staff from Zone 2 to maintain velocity through cutoff window.
-              </p>
+            {/* Left Column: Analytical/Diagnostic Content */}
+            <div style={{
+              flex: 1,
+              minWidth: 0,
+              paddingRight: sp.lg,
+              borderRight: `1px solid ${C.neutral[200]}`
+            }}>
+              {/* Description Section */}
+              <section style={{ marginBottom: sp.lg }}>
+                <h4 style={{
+                  ...typography.caption(),
+                  textTransform: 'uppercase',
+                  color: C.neutral[500],
+                  marginBottom: sp.sm
+                }}>
+                  Description
+                </h4>
+                <p style={{ ...typography.body(), color: C.neutral[800], margin: 0 }}>
+                  {alertData.msg}
+                </p>
+              </section>
+
+              {/* Contributing Factors Section */}
+              <section style={{ marginBottom: sp.lg }}>
+                <h4 style={{
+                  ...typography.caption(),
+                  textTransform: 'uppercase',
+                  color: C.neutral[500],
+                  marginBottom: sp.sm
+                }}>
+                  Contributing Factors
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm }}>
+                  <FactorCard icon={TrendingUp} title="Historical Pattern" value="3 similar events this quarter" />
+                  <FactorCard icon={Clock} title="Time Constraint" value="Peak period (14:00-16:00)" />
+                </div>
+              </section>
+            </div>
+
+            {/* Right Column: Predictive/Actionable Content */}
+            <div style={{
+              flex: 1,
+              minWidth: 0,
+              paddingLeft: sp.lg
+            }}>
+              {/* Predicted Impact Section */}
+              <section style={{ marginBottom: sp.lg }}>
+                <h4 style={{
+                  ...typography.caption(),
+                  textTransform: 'uppercase',
+                  color: C.neutral[500],
+                  marginBottom: sp.sm
+                }}>
+                  Predicted Impact
+                </h4>
+                <div style={{ background: C.neutral[50], padding: sp.md, borderRadius: 6 }}>
+                  <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
+                    Occurs in: {alertData.time}
+                  </p>
+                  <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0, marginTop: sp.xs }}>
+                    Confidence: {alertData.conf}%
+                  </p>
+                </div>
+              </section>
+
+              {/* Recommendations Section */}
+              <section>
+                <h4 style={{
+                  ...typography.caption(),
+                  textTransform: 'uppercase',
+                  color: C.neutral[500],
+                  marginBottom: sp.sm
+                }}>
+                  Recommendations
+                </h4>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'start',
+                  gap: sp.sm,
+                  padding: sp.md,
+                  background: C.purple[50],
+                  border: `1px solid ${C.purple[200]}`,
+                  borderRadius: 6
+                }}>
+                  <Lightbulb style={{ width: 18, height: 18, color: C.purple[600], flexShrink: 0 }} />
+                  <div>
+                    <p style={{ ...typography.bodySmall({ medium: true }), margin: 0, marginBottom: sp.xs }}>
+                      Add 2 FTE to Pack Station
+                    </p>
+                    <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
+                      Reassign staff from Zone 2 to maintain velocity through cutoff window.
+                    </p>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
-        </section>
+        ) : (
+          // SINGLE-COLUMN LAYOUT for smaller screens (existing)
+          <>
+            {/* Description Section */}
+            <section style={{ marginBottom: sp.lg }}>
+              <h4 style={{
+                ...typography.caption(),
+                textTransform: 'uppercase',
+                color: C.neutral[500],
+                marginBottom: sp.sm
+              }}>
+                Description
+              </h4>
+              <p style={{ ...typography.body(), color: C.neutral[800], margin: 0 }}>
+                {alertData.msg}
+              </p>
+            </section>
+
+            {/* Predicted Impact Section */}
+            <section style={{ marginBottom: sp.lg }}>
+              <h4 style={{
+                ...typography.caption(),
+                textTransform: 'uppercase',
+                color: C.neutral[500],
+                marginBottom: sp.sm
+              }}>
+                Predicted Impact
+              </h4>
+              <div style={{ background: C.neutral[50], padding: sp.md, borderRadius: 6 }}>
+                <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
+                  Occurs in: {alertData.time}
+                </p>
+                <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0, marginTop: sp.xs }}>
+                  Confidence: {alertData.conf}%
+                </p>
+              </div>
+            </section>
+
+            {/* Contributing Factors Section */}
+            <section style={{ marginBottom: sp.lg }}>
+              <h4 style={{
+                ...typography.caption(),
+                textTransform: 'uppercase',
+                color: C.neutral[500],
+                marginBottom: sp.sm
+              }}>
+                Contributing Factors
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm }}>
+                <FactorCard icon={TrendingUp} title="Historical Pattern" value="3 similar events this quarter" />
+                <FactorCard icon={Clock} title="Time Constraint" value="Peak period (14:00-16:00)" />
+              </div>
+            </section>
+
+            {/* Recommendations Section */}
+            <section>
+              <h4 style={{
+                ...typography.caption(),
+                textTransform: 'uppercase',
+                color: C.neutral[500],
+                marginBottom: sp.sm
+              }}>
+                Recommendations
+              </h4>
+              <div style={{
+                display: 'flex',
+                alignItems: 'start',
+                gap: sp.sm,
+                padding: sp.md,
+                background: C.purple[50],
+                border: `1px solid ${C.purple[200]}`,
+                borderRadius: 6
+              }}>
+                <Lightbulb style={{ width: 18, height: 18, color: C.purple[600], flexShrink: 0 }} />
+                <div>
+                  <p style={{ ...typography.bodySmall({ medium: true }), margin: 0, marginBottom: sp.xs }}>
+                    Add 2 FTE to Pack Station
+                  </p>
+                  <p style={{ ...typography.bodySmall(), color: C.neutral[700], margin: 0 }}>
+                    Reassign staff from Zone 2 to maintain velocity through cutoff window.
+                  </p>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
       </div>
 
       {/* Footer Actions */}

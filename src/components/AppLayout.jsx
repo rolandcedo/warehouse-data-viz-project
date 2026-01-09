@@ -124,7 +124,7 @@ const AppLayout = ({
                 flexDirection: 'column',
                 borderLeft: `1px solid ${C.neutral[200]}`,
                 background: 'white',
-                overflow: 'auto',
+                overflow: 'hidden',
                 position: 'relative'
               }}
             >

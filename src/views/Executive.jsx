@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Users, MapPin, ClipboardList, Calendar, DollarSign, ChevronRight, ChevronLeft, 
   ChevronDown, Clock, Package, Truck, AlertTriangle, ArrowRight, ArrowUpRight, 
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import { useTimeContext } from '../context/TimeContext';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { C, sp, scoreColor, scoreStatus } from '../styles/designSystem';
 import { ALERTS_DATA } from '../data/alertsData';
 
@@ -53,7 +54,28 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
   const [insightsSubTab, setInsightsSubTab] = useState('overall');
   const [staffShiftFilter, setStaffShiftFilter] = useState(null);
   const [highlightedAlert, setHighlightedAlert] = useState(null);
-  
+  const { isUltrawide, isWidePanel } = useWindowSize();
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 1024 ? 2 : 1);
+
   // Wrapper to scroll to top on tab change
   const setActiveTab = (tab) => {
     setActiveTabState(tab);
@@ -74,7 +96,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
   
   // Execute Live Plan Modal state
   const [executePlanModal, setExecutePlanModal] = useState({ isOpen: false });
-  
+
+  // Accordion state management for Insights tab
+  const [isActivePlanExpanded, setIsActivePlanExpanded] = useState(false);
+  const [isFteCardExpanded, setIsFteCardExpanded] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({
+    whatsHappening: true,
+    whyImportant: true,
+    contributingIssues: true,
+    suggestedResolution: true
+  });
+
   // Shared Plans State (lifted from PlansTabContent for cross-component access)
   const [allPlans, setAllPlans] = useState([
     {
@@ -1096,7 +1128,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
       />
 
       {/* Scrollable content wrapper */}
-      <div style={{ flex: 1, overflow: 'auto', padding: sp.lg }}>
+      <div ref={containerRef} style={{ flex: 1, overflow: 'auto', padding: sp.lg }}>
         {/* ===== FACILITY LEVEL VIEWS ===== */}
         {isAtFacilityLevel && activeTab === 'dashboard' && (
           <>
@@ -1293,6 +1325,20 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
         </div>
       )}
 
+      {/* Masonry Container - responsive columns: 1 col < 1024px, 2 cols 1024-2199px, 3 cols ≥ 2200px */}
+      <div style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+        {/* Warehouse Health card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Warehouse Health - with tri-temporal display and scenario support */}
       <Card style={{ background: 'white' }}>
         {/* Scenario Mode: Vertical stacked layout */}
@@ -1519,17 +1565,33 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                   <circle cx="120" cy="42" r="5" fill={C.neutral[700]} stroke="white" strokeWidth="2" />
                   
                   {/* Contextual time marker */}
-                  {isContextualDifferent && (
-                    <>
-                      <line x1="280" y1="5" x2="280" y2="105" stroke={C.brand[500]} strokeWidth="1.5" />
-                      <rect x="260" y="2" width="40" height="14" rx="3" fill={C.brand[500]} />
-                      <text x="280" y="12" fontSize="8" fill="white" textAnchor="middle" fontWeight="500">{contextualTime}</text>
-                      {/* Baseline point - circle */}
-                      <circle cx="280" cy="58" r="5" fill={C.brand[500]} stroke="white" strokeWidth="2" />
-                      {/* Scenario point - diamond */}
-                      <polygon points="280,20 285,25 280,30 275,25" fill={C.purple[500]} stroke="white" strokeWidth="2" />
-                    </>
-                  )}
+                  {isContextualDifferent && (() => {
+                    // Calculate x position based on contextualTime
+                    // Chart range: 06:00 (x=25) to 22:00 (x=440), so 16 hours total
+                    // Chart width: 415 pixels (440 - 25)
+                    const parseTimeToMinutes = (timeStr) => {
+                      const [hours, minutes] = timeStr.split(':').map(Number);
+                      return hours * 60 + minutes;
+                    };
+                    const chartStartMinutes = 6 * 60; // 06:00
+                    const chartEndMinutes = 22 * 60; // 22:00
+                    const chartRangeMinutes = chartEndMinutes - chartStartMinutes;
+                    const contextualMinutes = parseTimeToMinutes(contextualTime);
+                    const minutesFromStart = contextualMinutes - chartStartMinutes;
+                    const xPos = 25 + (minutesFromStart / chartRangeMinutes) * 415;
+
+                    return (
+                      <>
+                        <line x1={xPos} y1="5" x2={xPos} y2="105" stroke={C.brand[500]} strokeWidth="1.5" />
+                        <rect x={xPos - 20} y="2" width="40" height="14" rx="3" fill={C.brand[500]} />
+                        <text x={xPos} y="12" fontSize="8" fill="white" textAnchor="middle" fontWeight="500">{contextualTime}</text>
+                        {/* Baseline point - circle (interpolate y position based on the curve) */}
+                        <circle cx={xPos} cy={58} r="5" fill={C.brand[500]} stroke="white" strokeWidth="2" />
+                        {/* Scenario point - diamond (interpolate y position based on the curve) */}
+                        <polygon points={`${xPos},20 ${xPos+5},25 ${xPos},30 ${xPos-5},25`} fill={C.purple[500]} stroke="white" strokeWidth="2" />
+                      </>
+                    );
+                  })()}
                 </svg>
                 
                 {/* X-axis labels */}
@@ -1718,14 +1780,30 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                     <circle cx="120" cy="32" r="5" fill={C.neutral[700]} stroke="white" strokeWidth="2" />
                     
                     {/* Contextual marker */}
-                    {isContextualDifferent && (
-                      <>
-                        <line x1="280" y1="3" x2="280" y2="80" stroke={C.brand[500]} strokeWidth="1.5" />
-                        <rect x="260" y="0" width="40" height="14" rx="3" fill={C.brand[500]} />
-                        <text x="280" y="10" fontSize="8" fill="white" textAnchor="middle" fontWeight="500">{contextualTime}</text>
-                        <circle cx="280" cy="43" r="5" fill={C.brand[500]} stroke="white" strokeWidth="2" />
-                      </>
-                    )}
+                    {isContextualDifferent && (() => {
+                      // Calculate x position based on contextualTime
+                      // Chart range: 06:00 (x=25) to 22:00 (x=440), so 16 hours total
+                      // Chart width: 415 pixels (440 - 25)
+                      const parseTimeToMinutes = (timeStr) => {
+                        const [hours, minutes] = timeStr.split(':').map(Number);
+                        return hours * 60 + minutes;
+                      };
+                      const chartStartMinutes = 6 * 60; // 06:00
+                      const chartEndMinutes = 22 * 60; // 22:00
+                      const chartRangeMinutes = chartEndMinutes - chartStartMinutes;
+                      const contextualMinutes = parseTimeToMinutes(contextualTime);
+                      const minutesFromStart = contextualMinutes - chartStartMinutes;
+                      const xPos = 25 + (minutesFromStart / chartRangeMinutes) * 415;
+
+                      return (
+                        <>
+                          <line x1={xPos} y1="3" x2={xPos} y2="80" stroke={C.brand[500]} strokeWidth="1.5" />
+                          <rect x={xPos - 20} y="0" width="40" height="14" rx="3" fill={C.brand[500]} />
+                          <text x={xPos} y="10" fontSize="8" fill="white" textAnchor="middle" fontWeight="500">{contextualTime}</text>
+                          <circle cx={xPos} cy="43" r="5" fill={C.brand[500]} stroke="white" strokeWidth="2" />
+                        </>
+                      );
+                    })()}
                   </svg>
                   
                   {/* X-axis */}
@@ -1776,7 +1854,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           </>
         )}
       </Card>
-      
+        </div>
+
+        {/* Operational Categories card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Operational Categories - Navigation hub for human-driven exploration */}
       <Card>
         <div style={{ marginBottom: sp.md }}>
@@ -1788,10 +1876,10 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
             Current {isContextualDifferent && <span style={{ color: C.brand[600] }}>→ @{contextualTime}</span>} → Predicted • Click to explore
           </p>
         </div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
-          gap: sp.md 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: sp.md
         }}>
           {cats.map((cat, i) => {
             const Icon = cat.icon;
@@ -1987,7 +2075,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           </button>
         </div>
       </Card>
-      
+        </div>
+
+        {/* Throughput Forecast card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Throughput Forecast - with contextual marker, scenario comparison, and alerts */}
       <Card>
         <div style={{ marginBottom: sp.sm }}>
@@ -2243,7 +2341,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           </div>
         </Accordion>
       </Card>
-      
+        </div>
+
+        {/* Key Metrics card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Key Metrics with Predictions - with tri-temporal display and scenario support */}
       <Card>
         <div style={{ marginBottom: sp.md }}>
@@ -2893,7 +3001,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           />
         </Accordion>
       </Card>
-      
+        </div>
+
+        {/* Asset Health card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Asset Health - Equipment fleet status */}
       <Card>
         <div style={{ marginBottom: sp.md }}>
@@ -3038,7 +3156,17 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           </div>
         </Accordion>
       </Card>
-      
+        </div>
+
+        {/* Customer Impact card wrapper */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
       {/* Customer Impact - SLA and delivery performance with tri-temporal */}
       <Card>
         <div style={{ marginBottom: sp.md }}>
@@ -3354,6 +3482,8 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
           </div>
         </div>
       </Card>
+        </div>
+      </div>
           </>
         )}
         
@@ -3442,11 +3572,46 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
             
             {/* State-Aware Summary Panel */}
             {(() => {
+              // Accordion header component
+              const AccordionHeader = ({ title, isExpanded, onClick, icon = null, badge = null }) => (
+                <div
+                  onClick={onClick}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    padding: sp.sm,
+                    background: C.neutral[50],
+                    borderRadius: 4,
+                    border: `1px solid ${C.neutral[200]}`,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
+                    {icon}
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, color: C.neutral[700] }}>
+                      {title}
+                    </span>
+                    {badge}
+                  </div>
+                  <ChevronDown
+                    style={{
+                      width: 16,
+                      height: 16,
+                      color: C.neutral[500],
+                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s'
+                    }}
+                  />
+                </div>
+              );
+
               const hasActivePlan = activePlans.length > 0;
               const plan = activePlans[0];
               const tasksComplete = plan?.tasks?.filter(t => t.status === 'done').length || 0;
               const tasksTotal = plan?.tasks?.length || 0;
-              
+
               return (
                 <Card style={{ marginBottom: sp.md, background: hasActivePlan ? C.success[50] : C.neutral[50], border: `1px solid ${hasActivePlan ? C.success[200] : C.neutral[200]}` }}>
                   {hasActivePlan ? (
@@ -3498,9 +3663,29 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                           </button>
                         </div>
                       </div>
-                      
-                      {/* Stacked: Root Causes */}
-                      <div style={{ padding: sp.sm, background: 'white', borderRadius: 6, border: `1px solid ${C.neutral[200]}`, marginBottom: sp.sm }}>
+
+                      {/* Accordion toggle for main content */}
+                      <AccordionHeader
+                        title="Plan Details & Analysis"
+                        isExpanded={isActivePlanExpanded}
+                        onClick={() => setIsActivePlanExpanded(!isActivePlanExpanded)}
+                        badge={
+                          <span style={{
+                            fontSize: '0.75rem',
+                            padding: '2px 6px',
+                            background: C.neutral[100],
+                            color: C.neutral[600],
+                            borderRadius: 3
+                          }}>
+                            4 Root Causes • 6 Alerts • 1 Tradeoff
+                          </span>
+                        }
+                      />
+
+                      {isActivePlanExpanded && (
+                        <>
+                          {/* Stacked: Root Causes */}
+                          <div style={{ padding: sp.sm, background: 'white', borderRadius: 6, border: `1px solid ${C.neutral[200]}`, marginBottom: sp.sm, marginTop: sp.sm }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.xs }}>
                           <p style={{ fontSize: '11px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', margin: 0 }}>Root Causes</p>
                           <span style={{ fontSize: '10px', color: C.neutral[400] }}>4 identified</span>
@@ -3536,15 +3721,37 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                           </p>
                           <span style={{ fontSize: '10px', color: C.neutral[400] }}>1 intervention • 3 issues</span>
                         </div>
-                        
-                        {/* Tradeoff Group Card - similar structure to Root Cause cards */}
-                        <div style={{ 
-                          background: 'white', 
-                          border: `1px solid ${C.warning[200]}`,
-                          borderLeft: `4px solid ${C.warning[500]}`,
-                          borderRadius: '0 8px 8px 0',
-                          overflow: 'hidden'
-                        }}>
+
+                        {/* FTE Card Accordion */}
+                        <AccordionHeader
+                          title="FTE Reallocation Impact"
+                          isExpanded={isFteCardExpanded}
+                          onClick={() => setIsFteCardExpanded(!isFteCardExpanded)}
+                          icon={<AlertTriangle style={{ width: 14, height: 14, color: C.warning[600] }} />}
+                          badge={
+                            <span style={{
+                              fontSize: '0.75rem',
+                              padding: '2px 6px',
+                              background: C.warning[100],
+                              color: C.warning[700],
+                              borderRadius: 3,
+                              fontWeight: 600
+                            }}>
+                              TRADEOFF
+                            </span>
+                          }
+                        />
+
+                        {isFteCardExpanded && (
+                          <div style={{ marginTop: sp.sm }}>
+                            {/* Tradeoff Group Card - similar structure to Root Cause cards */}
+                            <div style={{
+                              background: 'white',
+                              border: `1px solid ${C.warning[200]}`,
+                              borderLeft: `4px solid ${C.warning[500]}`,
+                              borderRadius: '0 8px 8px 0',
+                              overflow: 'hidden'
+                            }}>
                           {/* Group Header */}
                           <div style={{ 
                             padding: sp.md, 
@@ -3589,22 +3796,80 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                           <div style={{ padding: sp.md, borderBottom: `1px solid ${C.neutral[200]}` }}>
                             {/* What's Happening */}
                             <div style={{ marginBottom: sp.md }}>
-                              <p style={{ fontSize: '11px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', marginBottom: sp.xs }}>
-                                What's Happening
-                              </p>
-                              <p style={{ fontSize: '13px', color: C.neutral[700], margin: 0, lineHeight: 1.5 }}>
-                                Moving 2 FTEs from Receiving to Picking resolved the UPS cutoff risk but reduced inbound processing capacity. This was an expected tradeoff when the plan was created.
-                              </p>
+                              <div
+                                onClick={() => setExpandedSections(prev => ({ ...prev, whatsHappening: !prev.whatsHappening }))}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: sp.xs,
+                                  cursor: 'pointer',
+                                  marginBottom: sp.xs
+                                }}
+                              >
+                                <ChevronDown
+                                  style={{
+                                    width: 12,
+                                    height: 12,
+                                    color: C.neutral[500],
+                                    transform: expandedSections.whatsHappening ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.2s'
+                                  }}
+                                />
+                                <p style={{
+                                  fontSize: '11px',
+                                  fontWeight: 600,
+                                  color: C.neutral[500],
+                                  textTransform: 'uppercase',
+                                  margin: 0
+                                }}>
+                                  What's Happening
+                                </p>
+                              </div>
+
+                              {expandedSections.whatsHappening && (
+                                <p style={{ fontSize: '13px', color: C.neutral[700], margin: 0, lineHeight: 1.5 }}>
+                                  Moving 2 FTEs from Receiving to Picking resolved the UPS cutoff risk but reduced inbound processing capacity. This was an expected tradeoff when the plan was created.
+                                </p>
+                              )}
                             </div>
                             
                             {/* Why It's Important */}
                             <div style={{ marginBottom: sp.md }}>
-                              <p style={{ fontSize: '11px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', marginBottom: sp.xs }}>
-                                Why It's Important
-                              </p>
-                              <p style={{ fontSize: '13px', color: C.neutral[700], margin: 0, lineHeight: 1.5 }}>
-                                Receiving is currently running 30 min behind target. If the delay exceeds 45 min, dock congestion will cascade into afternoon shifts and impact outbound capacity.
-                              </p>
+                              <div
+                                onClick={() => setExpandedSections(prev => ({ ...prev, whyImportant: !prev.whyImportant }))}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: sp.xs,
+                                  cursor: 'pointer',
+                                  marginBottom: sp.xs
+                                }}
+                              >
+                                <ChevronDown
+                                  style={{
+                                    width: 12,
+                                    height: 12,
+                                    color: C.neutral[500],
+                                    transform: expandedSections.whyImportant ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.2s'
+                                  }}
+                                />
+                                <p style={{
+                                  fontSize: '11px',
+                                  fontWeight: 600,
+                                  color: C.neutral[500],
+                                  textTransform: 'uppercase',
+                                  margin: 0
+                                }}>
+                                  Why It's Important
+                                </p>
+                              </div>
+
+                              {expandedSections.whyImportant && (
+                                <p style={{ fontSize: '13px', color: C.neutral[700], margin: 0, lineHeight: 1.5 }}>
+                                  Receiving is currently running 30 min behind target. If the delay exceeds 45 min, dock congestion will cascade into afternoon shifts and impact outbound capacity.
+                                </p>
+                              )}
                             </div>
                             
                             {/* Potential Outcome */}
@@ -3635,12 +3900,42 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                           </div>
                           
                           {/* Contributing Issues - Alert card style */}
-                          <div style={{ padding: sp.md }}>
-                            <p style={{ fontSize: '10px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', marginBottom: sp.sm }}>
-                              Contributing Issues (3)
-                            </p>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm, marginBottom: sp.md }}>
+                          <div style={{ padding: sp.md, borderTop: `1px solid ${C.neutral[200]}` }}>
+                            <div
+                              onClick={() => setExpandedSections(prev => ({ ...prev, contributingIssues: !prev.contributingIssues }))}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                cursor: 'pointer',
+                                marginBottom: sp.sm
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: sp.xs }}>
+                                <ChevronDown
+                                  style={{
+                                    width: 12,
+                                    height: 12,
+                                    color: C.neutral[500],
+                                    transform: expandedSections.contributingIssues ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.2s'
+                                  }}
+                                />
+                                <p style={{
+                                  fontSize: '10px',
+                                  fontWeight: 600,
+                                  color: C.neutral[500],
+                                  textTransform: 'uppercase',
+                                  margin: 0
+                                }}>
+                                  Contributing Issues
+                                </p>
+                              </div>
+                              <span style={{ fontSize: '10px', color: C.neutral[400] }}>(3)</span>
+                            </div>
+
+                            {expandedSections.contributingIssues && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm, marginBottom: sp.md }}>
                               {/* Issue 1 - Warning severity */}
                               <div style={{ 
                                 display: 'flex',
@@ -3742,14 +4037,44 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                                   </div>
                                 </div>
                               </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Suggested Resolution - Action Card style (matches Recommended Actions in Insights) */}
+                          <div style={{ marginTop: sp.md, padding: sp.md }}>
+                            <div
+                              onClick={() => setExpandedSections(prev => ({ ...prev, suggestedResolution: !prev.suggestedResolution }))}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: sp.xs,
+                                cursor: 'pointer',
+                                marginBottom: sp.sm
+                              }}
+                            >
+                              <ChevronDown
+                                style={{
+                                  width: 12,
+                                  height: 12,
+                                  color: C.neutral[500],
+                                  transform: expandedSections.suggestedResolution ? 'rotate(180deg)' : 'rotate(0deg)',
+                                  transition: 'transform 0.2s'
+                                }}
+                              />
+                              <p style={{
+                                fontSize: '10px',
+                                fontWeight: 600,
+                                color: C.neutral[500],
+                                textTransform: 'uppercase',
+                                margin: 0
+                              }}>
+                                Suggested Resolution
+                              </p>
                             </div>
-                            
-                            {/* Suggested Resolution - Action Card style (matches Recommended Actions in Insights) */}
-                            <p style={{ fontSize: '10px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', marginBottom: sp.sm }}>
-                              Suggested Resolution
-                            </p>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm, marginBottom: sp.md }}>
+
+                            {expandedSections.suggestedResolution && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm, marginBottom: sp.md }}>
                               {/* Action 1 - Primary recommendation (green border = positive impact) */}
                               <div style={{ 
                                 background: 'white', 
@@ -3857,8 +4182,9 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                                 </div>
                                 <span style={{ fontSize: '12px', color: C.neutral[400] }}>Confidence: 91%</span>
                               </div>
-                            </div>
-                            
+                              </div>
+                            )}
+
                             {/* Action Buttons */}
                             <div style={{ display: 'flex', gap: sp.sm }}>
                               <button style={{ 
@@ -3914,8 +4240,12 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
                               </button>
                             </div>
                           </div>
-                        </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
+                        </>
+                      )}
                     </>
                   ) : (
                     /* No Active Plan - Show summary of issues */

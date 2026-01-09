@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Package, LayoutDashboard, ClipboardList, Users, MapPin, Wrench,
-  Calendar, DollarSign, Lightbulb, Filter, Info
+  Package, LayoutDashboard, ClipboardList, Users, MapPin,
+  Calendar, DollarSign, Lightbulb, Filter, Info, Hammer, Truck
 } from 'lucide-react';
 
 // Context
@@ -20,6 +20,9 @@ import FacilityHeader from './components/FacilityHeader';
 // Styles
 import './styles/fonts.css';
 import { C, sp, styles } from './styles/designSystem';
+
+// Utils
+import { logTypographySystem } from './utils/logTypographySystem';
 
 // Views
 import Executive from './views/Executive';
@@ -57,6 +60,13 @@ const App = () => {
   const [llmWidth, setLlmWidth] = useState(null); // null when collapsed, pixel value when expanded
   const [sidepanelWidth, setSidepanelWidth] = useState(null); // null = default 50%
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Log typography system on mount (development only)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      logTypographySystem();
+    }
+  }, []);
   const [sidepanelActiveTab, setSidepanelActiveTab] = useState('details');
 
   // Handler for drilling into specific nouns/items
@@ -76,14 +86,14 @@ const App = () => {
   // Facility-level tabs for left navigation
   const facilityTabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'plans', icon: ClipboardList, label: 'Plans' },
     { id: 'staff', icon: Users, label: 'Staff' },
-    { id: 'work', icon: Package, label: 'Work Content' },
+    { id: 'work', icon: Hammer, label: 'Work Content' },
     { id: 'zones', icon: MapPin, label: 'Zones' },
-    { id: 'equipment', icon: Wrench, label: 'Equipment' },
+    { id: 'equipment', icon: Truck, label: 'Equipment' },
     { id: 'schedule', icon: Calendar, label: 'Schedule' },
     { id: 'financial', icon: DollarSign, label: 'Financial' },
     { id: 'insights', icon: Lightbulb, label: 'Insights' },
+    { id: 'plans', icon: ClipboardList, label: 'Plans' },
     { id: 'config', icon: Filter, label: 'Config' }
   ];
 

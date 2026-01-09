@@ -1,7 +1,6 @@
 import React from 'react';
 import { Menu, Star, Plus, Settings, Bell, ChevronDown } from 'lucide-react';
 import { C, sp } from '../styles/designSystem';
-import HexagonLogo from './HexagonLogo';
 import PlatformSwitcher from './PlatformSwitcher';
 import FavoritesDropdown from './FavoritesDropdown';
 import UserDropdown from './UserDropdown';
@@ -19,8 +18,8 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
   const { endTimeMode, setEndTimeMode, viewMode, setViewMode } = useTimeContext();
 
   const buttonStyle = {
-    width: 40,
-    height: 40,
+    width: 38,
+    height: 38,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -65,7 +64,7 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         }}
         aria-label="Toggle menu"
       >
-        <Menu style={{ width: 20, height: 20 }} />
+        <Menu style={{ width: 18, height: 18 }} />
       </button>
 
       {/* Logo/branding with hexagon + platform switcher */}
@@ -75,7 +74,11 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         gap: sp.sm,
         marginLeft: sp.sm
       }}>
-        <HexagonLogo size={24} />
+        <img
+          src="/ProModel-ai-Logo.png"
+          alt="ProModel.ai Logo"
+          style={{ width: 24, height: 24, objectFit: 'contain' }}
+        />
 
         <button
           onClick={() => setIsPlatformSwitcherOpen(!isPlatformSwitcherOpen)}
@@ -94,14 +97,15 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           aria-label="Switch platform"
         >
-          <div style={{
+          <h2 style={{
             fontSize: '18px',
             fontWeight: 600,
             color: C.neutral[50],
-            letterSpacing: '-0.02em'
+            letterSpacing: '-0.02em',
+            margin: 0
           }}>
             ProModel.ai
-          </div>
+          </h2>
           <ChevronDown style={{ width: 16, height: 16, color: C.neutral[300] }} />
         </button>
       </div>
@@ -122,9 +126,18 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
             // Visual feedback only for now
           }}
           style={{
-            ...buttonStyle,
+            width: 36,
+            height: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
             border: `1px solid ${C.neutral[700]}`,
-            borderRadius: '6px 0 0 6px'
+            borderRadius: '6px 0 0 6px',
+            cursor: 'pointer',
+            color: C.neutral[300],
+            transition: 'all 0.15s',
+            outline: 'none'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = C.neutral[800];
@@ -138,8 +151,8 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         >
           <Star
             style={{
-              width: 20,
-              height: 20,
+              width: 18,
+              height: 18,
               fill: isStarFilled ? C.yellow[400] : 'none'
             }}
           />
@@ -149,9 +162,18 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         <button
           onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
           style={{
-            ...buttonStyle,
+            width: 36,
+            height: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
             border: `1px solid ${C.neutral[700]}`,
-            borderRadius: '0 6px 6px 0'
+            borderRadius: '0 6px 6px 0',
+            cursor: 'pointer',
+            color: C.neutral[300],
+            transition: 'all 0.15s',
+            outline: 'none'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = C.neutral[800];
@@ -163,7 +185,7 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
           }}
           aria-label="View favorites"
         >
-          <ChevronDown style={{ width: 20, height: 20 }} />
+          <ChevronDown style={{ width: 18, height: 18 }} />
         </button>
       </div>
 
@@ -179,7 +201,7 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         }}
         aria-label="Create new"
       >
-        <Plus style={{ width: 20, height: 20 }} />
+        <Plus style={{ width: 18, height: 18 }} />
       </button>
 
       <button
@@ -194,7 +216,7 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         }}
         aria-label="Settings"
       >
-        <Settings style={{ width: 20, height: 20 }} />
+        <Settings style={{ width: 18, height: 18 }} />
       </button>
 
       <button
@@ -209,7 +231,7 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
         }}
         aria-label="Notifications"
       >
-        <Bell style={{ width: 20, height: 20 }} />
+        <Bell style={{ width: 18, height: 18 }} />
       </button>
 
       {/* User avatar */}

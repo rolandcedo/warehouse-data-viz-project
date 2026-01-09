@@ -60,15 +60,15 @@ const TimeScrubber = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <Zap style={{ width: 16, height: 16, color: C.purple[600] }} />
-            <span style={{ fontSize: '13px', fontWeight: 500, color: C.purple[700] }}>Scenario Mode:</span>
-            <span style={{ fontSize: '13px', color: C.purple[600] }}>{activeScenario.name}</span>
+            <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: C.purple[700] }}>Scenario Mode:</span>
+            <span style={{ fontSize: '0.8125rem', color: C.purple[600] }}>{activeScenario.name}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <button
               onClick={() => toggleScenarioMode(false)}
               style={{
                 padding: '4px 10px',
-                fontSize: '11px',
+                fontSize: '0.6875rem',
                 background: 'white',
                 color: C.neutral[600],
                 border: `1px solid ${C.neutral[300]}`,
@@ -96,16 +96,16 @@ const TimeScrubber = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <Lightbulb style={{ width: 16, height: 16, color: C.purple[600] }} />
-            <span style={{ fontSize: '13px', fontWeight: 500, color: C.purple[800] }}>Exploratory Scenario:</span>
-            <span style={{ fontSize: '13px', color: C.purple[700] }}>{draftPlanScenario.planName}</span>
-            <span style={{ fontSize: '11px', color: C.purple[500], marginLeft: 4 }}>— Viewing projected impact if plan succeeds</span>
+            <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: C.purple[800] }}>Exploratory Scenario:</span>
+            <span style={{ fontSize: '0.8125rem', color: C.purple[700] }}>{draftPlanScenario.planName}</span>
+            <span style={{ fontSize: '0.6875rem', color: C.purple[500], marginLeft: 4 }}>— Viewing projected impact if plan succeeds</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <button
               onClick={() => exitDraftPlanScenario && exitDraftPlanScenario()}
               style={{
                 padding: '4px 10px',
-                fontSize: '11px',
+                fontSize: '0.6875rem',
                 background: 'white',
                 color: C.purple[700],
                 border: `1px solid ${C.purple[300]}`,
@@ -127,13 +127,13 @@ const TimeScrubber = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: sp.lg, marginBottom: sp.md }}>
         {/* LEFT: Scenario selector */}
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
-            <span style={{ fontSize: '12px', color: C.neutral[500] }}>Scenario:</span>
+            <span style={{ fontSize: '0.75rem', color: C.neutral[500] }}>Scenario:</span>
             {scenarioSource === 'draft-plan' && draftPlanScenario ? (
               // Exploratory/Draft Plan scenario display
               <div style={{ display: 'flex', alignItems: 'center', gap: sp.xs }}>
                 <div style={{
                   padding: '4px 10px',
-                  fontSize: '12px',
+                  fontSize: '0.75rem',
                   border: `1px solid ${C.purple[400]}`,
                   borderRadius: 4,
                   background: C.purple[100],
@@ -153,7 +153,7 @@ const TimeScrubber = () => {
                   title="Exit to Live Mode"
                   style={{
                     padding: '4px 8px',
-                    fontSize: '11px',
+                    fontSize: '0.6875rem',
                     fontWeight: 500,
                     background: 'white',
                     color: C.purple[600],
@@ -195,7 +195,7 @@ const TimeScrubber = () => {
                       onClick={() => setIsOpen(!isOpen)}
                       style={{
                         padding: '6px 10px',
-                        fontSize: '12px',
+                        fontSize: '0.75rem',
                         border: `1px solid ${scenarioMode ? C.purple[300] : C.neutral[300]}`,
                         borderRadius: 4,
                         background: scenarioMode ? C.purple[50] : 'white',
@@ -260,17 +260,17 @@ const TimeScrubber = () => {
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: 4 }}>
                               <Radio style={{ width: 14, height: 14, color: C.success[500] }} />
-                              <span style={{ fontSize: '13px', fontWeight: 500, color: C.neutral[800] }}>Live Mode</span>
+                              <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: C.neutral[800] }}>Live Mode</span>
                               {!scenarioMode && <CheckCircle style={{ width: 14, height: 14, color: C.success[500], marginLeft: 'auto' }} />}
                             </div>
-                            <p style={{ fontSize: '11px', color: C.neutral[500], margin: 0, paddingLeft: 22 }}>
+                            <p style={{ fontSize: '0.6875rem', color: C.neutral[500], margin: 0, paddingLeft: 22 }}>
                               Ground truth — Current facility state
                             </p>
                           </div>
 
                           {/* Scenarios Header */}
                           <div style={{ padding: `${sp.sm} ${sp.md}`, background: C.neutral[50], borderBottom: `1px solid ${C.neutral[100]}` }}>
-                            <span style={{ fontSize: '10px', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <span style={{ fontSize: '0.625rem', fontWeight: 600, color: C.neutral[500], textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                               What-If Scenarios
                             </span>
                           </div>
@@ -296,10 +296,10 @@ const TimeScrubber = () => {
                               >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: 4 }}>
                                   <Zap style={{ width: 14, height: 14, color: C.purple[500] }} />
-                                  <span style={{ fontSize: '13px', fontWeight: 500, color: C.neutral[800] }}>{scenario.name}</span>
+                                  <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: C.neutral[800] }}>{scenario.name}</span>
                                   {isSelected && <CheckCircle style={{ width: 14, height: 14, color: C.purple[500], marginLeft: 'auto' }} />}
                                 </div>
-                                <p style={{ fontSize: '11px', color: C.neutral[500], margin: 0, marginBottom: 8, paddingLeft: 22 }}>
+                                <p style={{ fontSize: '0.6875rem', color: C.neutral[500], margin: 0, marginBottom: 8, paddingLeft: 22 }}>
                                   {scenario.description}
                                 </p>
 
@@ -307,7 +307,7 @@ const TimeScrubber = () => {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, paddingLeft: 22, flexWrap: 'wrap' }}>
                                   {impact.mitigated > 0 && (
                                     <span style={{
-                                      fontSize: '10px',
+                                      fontSize: '0.625rem',
                                       padding: '2px 6px',
                                       background: C.success[100],
                                       color: C.success[700],
@@ -319,7 +319,7 @@ const TimeScrubber = () => {
                                   )}
                                   {impact.persists > 0 && (
                                     <span style={{
-                                      fontSize: '10px',
+                                      fontSize: '0.625rem',
                                       padding: '2px 6px',
                                       background: C.neutral[100],
                                       color: C.neutral[600],
@@ -331,7 +331,7 @@ const TimeScrubber = () => {
                                   )}
                                   {impact.newAlerts > 0 && (
                                     <span style={{
-                                      fontSize: '10px',
+                                      fontSize: '0.625rem',
                                       padding: '2px 6px',
                                       background: C.warning[100],
                                       color: C.warning[700],
@@ -342,7 +342,7 @@ const TimeScrubber = () => {
                                     </span>
                                   )}
                                   <span style={{
-                                    fontSize: '10px',
+                                    fontSize: '0.625rem',
                                     padding: '2px 6px',
                                     background: impact.healthDelta > 0 ? C.success[100] : C.neutral[100],
                                     color: impact.healthDelta > 0 ? C.success[700] : C.neutral[600],
@@ -382,7 +382,7 @@ const TimeScrubber = () => {
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}
             >
-              <span style={{ fontSize: '10px', fontWeight: 500, color: C.neutral[600], textTransform: 'uppercase' }}>{shift.name}</span>
+              <span style={{ fontSize: '0.625rem', fontWeight: 500, color: C.neutral[600], textTransform: 'uppercase' }}>{shift.name}</span>
             </div>
           ))}
         </div>
@@ -405,7 +405,7 @@ const TimeScrubber = () => {
             borderRadius: 2,
             boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
           }} />
-          <span style={{ fontSize: '10px', fontWeight: 600, color: C.neutral[800], marginTop: 2 }}>NOW</span>
+          <span style={{ fontSize: '0.625rem', fontWeight: 600, color: C.neutral[800], marginTop: 2 }}>NOW</span>
         </div>
 
         {/* Contextual marker (movable) */}
@@ -427,14 +427,14 @@ const TimeScrubber = () => {
             }}>
               <GripVertical style={{ width: 10, height: 10, color: 'white' }} />
             </div>
-            <span style={{ fontSize: '10px', fontWeight: 600, color: C.brand[600], marginTop: 2 }}>{contextualTime}</span>
+            <span style={{ fontSize: '0.625rem', fontWeight: 600, color: C.brand[600], marginTop: 2 }}>{contextualTime}</span>
           </div>
         )}
 
         {/* Hour markers */}
         <div style={{ position: 'absolute', top: 38, left: 0, right: 0, display: 'flex', justifyContent: 'space-between' }}>
           {hourMarkers.map(h => (
-            <span key={h} style={{ fontSize: '10px', color: C.neutral[400], transform: 'translateX(-50%)', position: 'absolute', left: `${timeToPercent(h)}%` }}>
+            <span key={h} style={{ fontSize: '0.625rem', color: C.neutral[400], transform: 'translateX(-50%)', position: 'absolute', left: `${timeToPercent(h)}%` }}>
               {h.toString().padStart(2, '0')}:00
             </span>
           ))}
@@ -453,7 +453,7 @@ const TimeScrubber = () => {
           {/* Now display */}
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <div style={{ width: 12, height: 12, background: C.neutral[800], borderRadius: 2 }} />
-            <span style={{ fontSize: '13px', fontFamily: 'Roboto, sans-serif', color: C.neutral[600] }}>
+            <span style={{ fontSize: '0.8125rem', fontFamily: 'Roboto, sans-serif', color: C.neutral[600] }}>
               Now: <strong>{nowTime}</strong>
             </span>
           </div>
@@ -462,10 +462,10 @@ const TimeScrubber = () => {
           {isContextualDifferent && (
             <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
               <div style={{ width: 12, height: 12, background: C.brand[500], borderRadius: 2 }} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, sans-serif', color: C.brand[600] }}>
+              <span style={{ fontSize: '0.8125rem', fontFamily: 'Roboto, sans-serif', color: C.brand[600] }}>
                 Viewing: <strong>{contextualTime}</strong>
                 {isContextualPast && (
-                  <span style={{ fontSize: '11px', fontFamily: 'Roboto, sans-serif', color: C.neutral[500], marginLeft: 4 }}>
+                  <span style={{ fontSize: '0.6875rem', fontFamily: 'Roboto, sans-serif', color: C.neutral[500], marginLeft: 4 }}>
                     (past)
                   </span>
                 )}
@@ -487,7 +487,7 @@ const TimeScrubber = () => {
               border: `1px solid ${C.neutral[300]}`,
               background: 'white',
               cursor: 'pointer',
-              fontSize: '12px',
+              fontSize: '0.75rem',
               fontFamily: 'Roboto, sans-serif',
               color: C.neutral[600],
               height: 'fit-content'
