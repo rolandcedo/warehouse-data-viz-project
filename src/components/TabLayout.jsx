@@ -6,6 +6,7 @@ import { C, sp } from '../styles/designSystem';
  * Used for the Contextual Sidepanel to show tabs alongside content
  */
 const TabLayout = ({ tabs, activeTab, onTabChange, children }) => {
+
   return (
     <div style={{
       display: 'flex',
@@ -67,13 +68,13 @@ const TabLayout = ({ tabs, activeTab, onTabChange, children }) => {
       </div>
 
       {/* Tab Content Area */}
-      <div style={{
-        flex: 1,
-        overflow: 'hidden',
-        background: 'white',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <div
+        style={{
+          flex: 1,
+          overflow: 'auto',
+          background: 'white'
+        }}
+      >
         {children}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, Star, Plus, Settings, Bell, ChevronDown } from 'lucide-react';
-import { C, sp } from '../styles/designSystem';
+import { C, sp, typography } from '../styles/designSystem';
 import PlatformSwitcher from './PlatformSwitcher';
 import FavoritesDropdown from './FavoritesDropdown';
 import UserDropdown from './UserDropdown';
@@ -97,15 +97,15 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           aria-label="Switch platform"
         >
-          <h2 style={{
-            fontSize: '18px',
-            fontWeight: 600,
+          <h1 style={{
+            ...typography.h1Large(),
             color: C.neutral[50],
             letterSpacing: '-0.02em',
-            margin: 0
+            margin: 0,
+            fontFamily: 'Orbitron, sans-serif'
           }}>
             ProModel.ai
-          </h2>
+          </h1>
           <ChevronDown style={{ width: 16, height: 16, color: C.neutral[300] }} />
         </button>
       </div>

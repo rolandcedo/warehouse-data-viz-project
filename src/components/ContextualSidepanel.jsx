@@ -81,7 +81,7 @@ const ContextualSidepanel = ({
             </h1>
           </div>
 
-          {/* Right: Facility Actions Dropdown */}
+          {/* Right: Facility Actions */}
           <FacilityActionsDropdown />
         </div>
       </div>

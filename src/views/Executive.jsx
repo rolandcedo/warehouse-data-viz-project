@@ -74,7 +74,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
   }, []);
 
   // Determine column count based on container width (not window width)
-  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 1024 ? 2 : 1);
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
 
   // Wrapper to scroll to top on tab change
   const setActiveTab = (tab) => {
@@ -1325,7 +1325,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
         </div>
       )}
 
-      {/* Masonry Container - responsive columns: 1 col < 1024px, 2 cols 1024-2199px, 3 cols ≥ 2200px */}
+      {/* Masonry Container - responsive columns: 1 col < 992px, 2 cols 992-2199px, 3 cols ≥ 2200px */}
       <div style={{
         columnCount: columnCount,
         columnGap: sp.lg
