@@ -74,7 +74,6 @@ const AppLayout = ({
         <div style={{
           width: '100%',
           flexShrink: 0,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
           zIndex: 100
         }}>
           <TimeScrubber />
@@ -107,8 +106,7 @@ const AppLayout = ({
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
-            padding: sp.lg,
-            background: C.neutral[50]
+            background: C.neutral[100]
           }} data-scroll-container>
             {children}
           </div>

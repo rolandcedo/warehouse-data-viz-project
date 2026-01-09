@@ -4,10 +4,13 @@
   "description": "ProModel.ai Warehouse Operations Dashboard - Interactive prototype",
   "private": true,
   "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.10.0",
-    "lucide-react": "^0.294.0"
+    "three": "^0.160.1"
   },
   "scripts": {
     "start": "react-scripts start",

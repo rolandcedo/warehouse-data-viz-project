@@ -132,7 +132,7 @@ const DayShift = ({ onBack }) => {
   const ctxZoneZ04 = isContextualDifferent ? interpolateValue(zoneZ04Data, contextualTime) : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: sp.md }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: sp.md, padding: sp.md }}>
       {/* Header */}
       <div style={{ background: `linear-gradient(135deg, ${C.neutral[900]} 0%, ${C.neutral[800]} 100%)`, borderRadius: 12, padding: sp.lg, color: 'white' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sp.lg }}>

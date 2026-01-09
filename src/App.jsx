@@ -6,16 +6,20 @@ import {
 
 // Context
 import { TimeProvider } from './context/TimeContext';
+import { SelectionProvider, useSelection } from './context/SelectionContext';
 
 // Components
 import AppLayout from './components/AppLayout';
 import ContextualSidepanel from './components/ContextualSidepanel';
-import CanvasPlaceholder from './components/CanvasPlaceholder';
+import CanvasView from './components/CanvasView';
 import LLMSidebar from './components/LLMSidebar';
 import TabLayout from './components/TabLayout';
 import GlobalNavbar from './components/GlobalNavbar';
 import HamburgerMenu from './components/HamburgerMenu';
 import FacilityHeader from './components/FacilityHeader';
+
+// Data
+import { getZoneById } from './data/warehouseData';
 
 // Styles
 import './styles/fonts.css';
@@ -47,8 +51,8 @@ import DockDoorsDetail from './views/ZoneViews/DockDoorsDetail';
 // UI Components
 import { Card, Breadcrumb } from './components/UI';
 
-// ===== MAIN APP =====
-const App = () => {
+// ===== INNER COMPONENT (uses context hooks) =====
+const AppContent = () => {
   const [view, setView] = useState('exec');
   const [selectedZone, setSelectedZone] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -60,6 +64,10 @@ const App = () => {
   const [llmWidth, setLlmWidth] = useState(null); // null when collapsed, pixel value when expanded
   const [sidepanelWidth, setSidepanelWidth] = useState(null); // null = default 50%
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [sidepanelActiveTab, setSidepanelActiveTab] = useState('details');
+
+  // Canvas selection integration - NOW INSIDE PROVIDER!
+  const { selectedZone: canvasSelectedZone, breadcrumbs: selectionBreadcrumbs, clearSelection } = useSelection();
 
   // Log typography system on mount (development only)
   useEffect(() => {
@@ -67,7 +75,30 @@ const App = () => {
       logTypographySystem();
     }
   }, []);
-  const [sidepanelActiveTab, setSidepanelActiveTab] = useState('details');
+
+  // Sync canvas zone selection to sidepanel
+  useEffect(() => {
+    if (canvasSelectedZone && view === 'exec') {
+      const zone = getZoneById(canvasSelectedZone);
+      if (zone) {
+        setActiveTab('zones'); // Activate Zones tab when zone selected
+        setSidepanelActiveTab('dashboard'); // Set to first zone tab
+        setSidepanelData({
+          type: 'zone',
+          id: canvasSelectedZone,
+          name: zone.name,
+          zoneType: zone.type,
+          color: zone.color,
+          position: zone.position,
+          size: zone.size
+        });
+      }
+    } else if (!canvasSelectedZone && sidepanelData?.type === 'zone') {
+      // Clear sidepanel if zone deselected
+      setSidepanelData(null);
+      setSidepanelActiveTab('details'); // Reset to default
+    }
+  }, [canvasSelectedZone, view]);
 
   // Handler for drilling into specific nouns/items
   const handleNavigate = (type, id) => {
@@ -104,15 +135,22 @@ const App = () => {
 
   // Generate breadcrumb items based on sidepanel data
   const getSidepanelBreadcrumbs = (data) => {
+    // If no sidepanel data but zone is selected in canvas, show selection breadcrumbs
+    if (!data && canvasSelectedZone) {
+      return selectionBreadcrumbs.map((crumb, idx) => ({
+        label: crumb.label,
+        onClick: idx === 0 ? () => { clearSelection(); setSidepanelData(null); } : undefined
+      }));
+    }
+
     if (!data) return [];
 
     const items = [
-      { label: 'Facility Overview', onClick: () => { setView('exec'); setSidepanelData(null); } }
+      { label: 'Facility Overview', onClick: () => { setView('exec'); setActiveTab('zones'); setSidepanelData(null); clearSelection(); } }
     ];
 
     if (data.type === 'zone') {
       items.push(
-        { label: 'Zones', onClick: () => { setView('zones'); setSidepanelData(null); } },
         { label: data.name || data.id }
       );
     } else if (data.type === 'alert') {
@@ -250,7 +288,7 @@ const App = () => {
   // Render main content area - NOW RETURNS CANVAS (swapped from renderSidepanel)
   const renderView = () => {
     switch (view) {
-      case 'exec': return <CanvasPlaceholder />;
+      case 'exec': return <CanvasView onNavigateToWarRoom={() => setView('day')} />;
       case 'day': return <DayShift onBack={() => setView('exec')} />;
       case 'swing': return <SwingShift onBack={() => setView('exec')} />;
       case 'night': return <NightShift onBack={() => setView('exec')} />;
@@ -301,7 +339,7 @@ const App = () => {
   };
 
   return (
-    <TimeProvider>
+    <>
       <style>{styles}</style>
       {/* Global navbar at top */}
       <GlobalNavbar
@@ -329,6 +367,17 @@ const App = () => {
       >
         {renderView()}
       </AppLayout>
+    </>
+  );
+};
+
+// ===== OUTER APP WRAPPER (provides contexts) =====
+const App = () => {
+  return (
+    <TimeProvider>
+      <SelectionProvider>
+        <AppContent />
+      </SelectionProvider>
     </TimeProvider>
   );
 };

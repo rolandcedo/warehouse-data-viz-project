@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, TrendingUp, Lightbulb, Clock, Info, ChevronDown } from 'lucide-react';
+import { X, AlertTriangle, TrendingUp, TrendingDown, Lightbulb, Clock, Info, ChevronDown, MapPin } from 'lucide-react';
 import { C, sp, typography } from '../styles/designSystem';
 import { ALERTS_DATA } from '../data/alertsData';
+import { getRacksByZone } from '../data/warehouseData';
 import TabLayout from './TabLayout';
 import { Breadcrumb } from './UI/index';
 import { useWindowSize } from '../hooks/useWindowSize';
+import ZoneDetailView, { getZoneTabs } from './ZoneDetailView';
 
 /**
  * ContextualSidepanel - 10K ft view: Analyze & Optimize
@@ -17,11 +19,19 @@ const ContextualSidepanel = ({
   facilityName = 'Acme Distribution',
   breadcrumbItems = [],
   onBreadcrumbNavigate,
-  tabs = [{ id: 'details', label: 'Details', icon: Info }],
+  tabs: propTabs,  // Rename to avoid confusion with computed tabs
   activeTab = 'details',
   onTabChange
 }) => {
   if (!data) return null;
+
+  // Conditionally determine which tabs to show based on entity type
+  const tabs = data.type === 'zone'
+    ? getZoneTabs()  // Use zone tabs for zone entities
+    : (propTabs || [{ id: 'details', label: 'Details', icon: Info }]);  // Use default tabs for other entities
+
+  // Calculate zone metrics if data is a zone
+  const zoneMetrics = data.type === 'zone' ? calculateZoneMetrics(data) : null;
 
   return (
     <div style={{
@@ -34,7 +44,7 @@ const ContextualSidepanel = ({
       <div style={{
         flexShrink: 0,
         background: 'white',
-        borderBottom: `1px solid ${C.neutral[200]}`
+        borderBottom: `1px solid ${C.neutral[400]}`
       }}>
         {/* Breadcrumb */}
         {breadcrumbItems.length > 0 && (
@@ -46,7 +56,7 @@ const ContextualSidepanel = ({
           </div>
         )}
 
-        {/* Logo + Title + Actions Row */}
+        {/* CONDITIONAL HEADER - Changes based on entity type */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -54,35 +64,86 @@ const ContextualSidepanel = ({
           gap: sp.md,
           padding: `${sp.sm} ${sp.lg} ${sp.md} ${sp.lg}`
         }}>
-          {/* Left: Logo + Title */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: sp.md,
-            flex: 1
-          }}>
-            <img
-              src="/facility-logo.png"
-              alt="Facility Logo"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 4,
-                objectFit: 'contain'
-              }}
-            />
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: 600,
-              color: C.neutral[900],
-              margin: 0
-            }}>
-              {facilityName} Overview
-            </h1>
-          </div>
+          {data.type === 'zone' ? (
+            // ZONE HEADER
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: sp.md, flex: 1 }}>
+                {/* Zone icon with colored background */}
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 8,
+                  background: `${data.color}20`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <MapPin style={{ width: 24, height: 24, color: data.color }} />
+                </div>
 
-          {/* Right: Facility Actions */}
-          <FacilityActionsDropdown />
+                {/* Zone name */}
+                <div style={{ flex: 1 }}>
+                  <h1 style={{ ...typography.h1Large(), margin: 0 }}>
+                    {data.id} {data.name}
+                  </h1>
+                </div>
+
+                {/* Issues badge */}
+                {zoneMetrics && zoneMetrics.issueCount > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: sp.xs,
+                    padding: `${sp.xs} ${sp.sm}`,
+                    background: C.warning[50],
+                    border: `1px solid ${C.warning[200]}`,
+                    borderRadius: 6
+                  }}>
+                    <AlertTriangle style={{ width: 16, height: 16, color: C.warning[600] }} />
+                    <span style={{ ...typography.bodySmall(), color: C.warning[700], fontWeight: 500 }}>
+                      {zoneMetrics.issueCount} Issues Detected
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Location Actions Dropdown */}
+              <LocationActionsDropdown zone={data} />
+            </>
+          ) : (
+            // FACILITY HEADER (default)
+            <>
+              {/* Left: Logo + Title */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: sp.md,
+                flex: 1
+              }}>
+                <img
+                  src="/facility-logo.png"
+                  alt="Facility Logo"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 4,
+                    objectFit: 'contain'
+                  }}
+                />
+                <h1 style={{
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  color: C.neutral[900],
+                  margin: 0
+                }}>
+                  {facilityName} Overview
+                </h1>
+              </div>
+
+              {/* Right: Facility Actions */}
+              <FacilityActionsDropdown />
+            </>
+          )}
         </div>
       </div>
 
@@ -94,7 +155,7 @@ const ContextualSidepanel = ({
       >
         {/* Render panel content based on entity type */}
         {data.type === 'alert' && <AlertDetailTab alert={data} onClose={onClose} />}
-        {data.type === 'zone' && <ZoneDetailTab zone={data} onClose={onClose} />}
+        {data.type === 'zone' && <ZoneDetailTab zone={data} onClose={onClose} activeTab={activeTab} zoneMetrics={zoneMetrics} />}
         {data.type === 'staff' && <StaffDetailTab staff={data} onClose={onClose} />}
         {data.type === 'equipment' && <EquipmentDetailTab equipment={data} onClose={onClose} />}
         {!['alert', 'zone', 'staff', 'equipment'].includes(data.type) && (
@@ -104,6 +165,50 @@ const ContextualSidepanel = ({
     </div>
   );
 };
+
+/**
+ * Helper Functions
+ */
+
+// Calculate zone metrics from rack data
+const calculateZoneMetrics = (zoneData) => {
+  const racks = getRacksByZone(zoneData.id);
+  const totalCapacity = racks.reduce((sum, r) => sum + r.capacity, 0);
+  const currentOccupancy = racks.reduce((sum, r) => sum + r.current, 0);
+  const utilizationPercent = totalCapacity > 0 ? Math.round((currentOccupancy / totalCapacity) * 100) : 0;
+
+  // Mock issue count (replace with real data source)
+  const issueCount = utilizationPercent > 90 ? Math.floor(Math.random() * 5) + 1 : 0;
+
+  return {
+    rackCount: racks.length,
+    totalCapacity,
+    currentOccupancy,
+    utilizationPercent,
+    issueCount
+  };
+};
+
+/**
+ * QuickStat Component - Shows a metric with optional trend indicator
+ */
+const QuickStat = ({ label, value, trend, color }) => (
+  <div style={{
+    padding: sp.md,
+    background: 'white',
+    borderRadius: 8,
+    border: `1px solid ${C.neutral[200]}`
+  }}>
+    <div style={{ ...typography.bodySmall(), color: C.neutral[500], marginBottom: sp.xs }}>
+      {label}
+    </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: sp.xs }}>
+      <span style={{ ...typography.h4(), color, margin: 0 }}>{value}</span>
+      {trend === 'up' && <TrendingUp style={{ width: 16, height: 16, color: C.error[500] }} />}
+      {trend === 'down' && <TrendingDown style={{ width: 16, height: 16, color: C.success[500] }} />}
+    </div>
+  </div>
+);
 
 /**
  * FacilityActionsDropdown - Dropdown menu for facility-level actions
@@ -220,6 +325,130 @@ const FacilityActionsDropdown = () => {
             >
               <div style={{ fontSize: '13px', color: C.neutral[800] }}>
                 Placeholder Action 3
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/**
+ * LocationActionsDropdown - Dropdown menu for zone-specific actions
+ */
+const LocationActionsDropdown = ({ zone }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: sp.sm,
+          padding: `${sp.sm} ${sp.md}`,
+          background: C.brand[500],
+          color: 'white',
+          border: 'none',
+          borderRadius: 6,
+          fontSize: '14px',
+          fontWeight: 500,
+          cursor: 'pointer',
+          whiteSpace: 'nowrap'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = C.brand[600];
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = C.brand[500];
+        }}
+      >
+        LOCATION ACTIONS
+        <ChevronDown style={{
+          width: 14,
+          height: 14,
+          transform: isOpen ? 'rotate(180deg)' : 'none',
+          transition: 'transform 0.15s'
+        }} />
+      </button>
+
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <>
+          {/* Backdrop to close on click outside */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 998 }}
+            onClick={() => setIsOpen(false)}
+          />
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: sp.xs,
+            minWidth: 200,
+            background: 'white',
+            border: `1px solid ${C.neutral[200]}`,
+            borderRadius: 8,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            zIndex: 999,
+            overflow: 'hidden'
+          }}>
+            <div
+              onClick={() => { setIsOpen(false); console.log('View on Canvas', zone); }}
+              style={{
+                padding: sp.md,
+                cursor: 'pointer',
+                borderBottom: `1px solid ${C.neutral[100]}`,
+                transition: 'background 0.1s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = C.neutral[50];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'white';
+              }}
+            >
+              <div style={{ fontSize: '13px', color: C.neutral[800] }}>
+                View on Canvas
+              </div>
+            </div>
+            <div
+              onClick={() => { setIsOpen(false); console.log('Edit Zone', zone); }}
+              style={{
+                padding: sp.md,
+                cursor: 'pointer',
+                borderBottom: `1px solid ${C.neutral[100]}`,
+                transition: 'background 0.1s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = C.neutral[50];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'white';
+              }}
+            >
+              <div style={{ fontSize: '13px', color: C.neutral[800] }}>
+                Edit Zone
+              </div>
+            </div>
+            <div
+              onClick={() => { setIsOpen(false); console.log('Export Data', zone); }}
+              style={{
+                padding: sp.md,
+                cursor: 'pointer',
+                transition: 'background 0.1s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = C.neutral[50];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'white';
+              }}
+            >
+              <div style={{ fontSize: '13px', color: C.neutral[800] }}>
+                Export Data
               </div>
             </div>
           </div>
@@ -512,7 +741,7 @@ const FactorCard = ({ icon: Icon, title, value }) => (
     alignItems: 'center',
     gap: sp.sm,
     padding: sp.sm,
-    background: 'white',
+    background: C.neutral[100],
     border: `1px solid ${C.neutral[200]}`,
     borderRadius: 4
   }}>
@@ -529,41 +758,8 @@ const FactorCard = ({ icon: Icon, title, value }) => (
 );
 
 // Tab content for other entity types
-const ZoneDetailTab = ({ zone, onClose }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    <div style={{
-      padding: sp.lg,
-      borderBottom: `1px solid ${C.neutral[200]}`,
-      background: C.neutral[50],
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'start',
-      flexShrink: 0
-    }}>
-      <h3 style={{ ...typography.h4(), margin: 0 }}>Zone: {zone.name}</h3>
-      {onClose && (
-        <button onClick={onClose} style={{
-          padding: sp.xs,
-          border: 'none',
-          background: 'transparent',
-          cursor: 'pointer'
-        }}>
-          <X style={{ width: 18, height: 18, color: C.neutral[500] }} />
-        </button>
-      )}
-    </div>
-    <div style={{
-      flex: 1,
-      overflow: 'auto',
-      padding: sp.lg,
-      paddingLeft: sp.xl,
-      paddingRight: sp.xl
-    }}>
-      <p style={{ ...typography.body(), color: C.neutral[600] }}>
-        Zone detail panel - to be implemented
-      </p>
-    </div>
-  </div>
+const ZoneDetailTab = ({ zone, onClose, activeTab, zoneMetrics }) => (
+  <ZoneDetailView zone={zone} activeTab={activeTab} zoneMetrics={zoneMetrics} />
 );
 
 const StaffDetailTab = ({ staff, onClose }) => (
