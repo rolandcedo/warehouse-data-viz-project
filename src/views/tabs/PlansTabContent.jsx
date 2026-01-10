@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Users, MapPin, Clock, Package, Truck, AlertTriangle, ArrowRight,
   ChevronRight, ChevronLeft, Zap, CheckCircle, Info, AlertOctagon,
@@ -32,7 +32,27 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
   
   // Completion feedback banner
   const [completionBanner, setCompletionBanner] = React.useState({ show: false, planName: '', action: '', followOnPlanId: null });
-  
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // Activity Feed for selected plan
   const [activities, setActivities] = React.useState([
     { id: 'a1', type: 'status', user: 'Mike Chen', action: 'marked task as complete', target: 'Add 4 FTE pickers', time: '10:52 AM' },
@@ -531,7 +551,13 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
     return (
       <>
         <Header icon={ClipboardList} title="Plan Execution" sub="Track active plans, review history, and manage operational interventions" color={C.success[600]} />
-        
+
+        {/* Masonry Container - responsive columns */}
+        <div ref={containerRef} style={{
+          columnCount: columnCount,
+          columnGap: sp.lg
+        }}>
+
         {/* Completion Banner */}
         {completionBanner.show && (
           <div style={{ 
@@ -646,38 +672,55 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
             </div>
           </div>
         )}
-        
+
         {/* Stats Summary */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sp.md, marginBottom: sp.md }}>
-          {[
-            { label: 'Plans This Week', value: stats.totalThisWeek, icon: ClipboardList, color: C.brand },
-            { label: 'Success Rate', value: `${stats.successRate}%`, icon: CheckCircle, color: C.success },
-            { label: 'Avg Duration', value: stats.avgDuration, icon: Clock, color: C.purple },
-            { label: 'Active Now', value: stats.active, icon: Zap, color: C.warning }
-          ].map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={idx} style={{ display: 'flex', alignItems: 'center', gap: sp.md }}>
-                <div style={{
-                  width: 48, height: 48,
-                  borderRadius: 12,
-                  background: stat.color[100],
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <Icon style={{ width: 24, height: 24, color: stat.color[600] }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '24px', fontWeight: 300, color: C.neutral[800] }}>{stat.value}</div>
-                  <div style={{ fontSize: '12px', color: C.neutral[500] }}>{stat.label}</div>
-                </div>
-              </Card>
-            );
-          })}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sp.md, marginBottom: sp.md }}>
+            {[
+              { label: 'Plans This Week', value: stats.totalThisWeek, icon: ClipboardList, color: C.brand },
+              { label: 'Success Rate', value: `${stats.successRate}%`, icon: CheckCircle, color: C.success },
+              { label: 'Avg Duration', value: stats.avgDuration, icon: Clock, color: C.purple },
+              { label: 'Active Now', value: stats.active, icon: Zap, color: C.warning }
+            ].map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={idx} style={{ display: 'flex', alignItems: 'center', gap: sp.md }}>
+                  <div style={{
+                    width: 48, height: 48,
+                    borderRadius: 12,
+                    background: stat.color[100],
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <Icon style={{ width: 24, height: 24, color: stat.color[600] }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '24px', fontWeight: 300, color: C.neutral[800] }}>{stat.value}</div>
+                    <div style={{ fontSize: '12px', color: C.neutral[500] }}>{stat.label}</div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         </div>
-        
+
         {/* Current Active Plans (if any exist) */}
         {activePlans.length > 0 && (
-          <Card style={{ marginBottom: sp.md, background: C.success[50], border: `2px solid ${C.success[300]}` }}>
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card style={{ background: C.success[50], border: `2px solid ${C.success[300]}` }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sp.sm }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
                 <Zap style={{ width: 18, height: 18, color: C.success[600] }} />
@@ -757,11 +800,20 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
               ))}
             </div>
           </Card>
+          </div>
         )}
-        
+
         {/* No Active Plan - Empty State */}
         {activePlans.length === 0 && (
-          <Card style={{ marginBottom: sp.md, background: C.neutral[50], border: `2px dashed ${C.neutral[300]}`, textAlign: 'center', padding: sp.xl }}>
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card style={{ background: C.neutral[50], border: `2px dashed ${C.neutral[300]}`, textAlign: 'center', padding: sp.xl }}>
             <div style={{
               width: 64, height: 64,
               borderRadius: '50%',
@@ -818,11 +870,13 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
               </button>
             </div>
           </Card>
+          </div>
         )}
-        
-        {/* Plans List */}
-        <Card>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
+        </div>  {/* Close masonry container */}
+
+        {/* Plans List - Full Width */}
+        <div style={{ marginBottom: sp.lg }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md, padding: `0 ${sp.md} ${sp.md} ${sp.md}`, background: 'white' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 500, color: C.neutral[800], margin: 0 }}>All Plans</h3>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
@@ -868,7 +922,7 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
           </div>
           
           {/* Status Filter Tabs */}
-          <div style={{ display: 'flex', gap: 0, marginBottom: sp.md, borderBottom: `1px solid ${C.neutral[200]}` }}>
+          <div style={{ display: 'flex', gap: 0, marginBottom: sp.md, padding: `0 ${sp.md}`, background: 'white', borderBottom: `1px solid ${C.neutral[200]}` }}>
             {[
               { id: 'all', label: 'All', count: allPlans.length },
               { id: 'active', label: 'Active', count: stats.active },
@@ -1013,8 +1067,8 @@ const PlansTabContent = ({ onViewInsights, onNavigateToAlert, allPlans, setAllPl
               })
             )}
           </div>
-        </Card>
-        
+        </div>
+
         {/* Create Plan Modal */}
         {showCreateModal && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }}>
