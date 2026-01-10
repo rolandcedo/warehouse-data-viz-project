@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Star, Plus, Settings, Bell, ChevronDown } from 'lucide-react';
+import { Menu, Star, Plus, Settings, Bell, ChevronDown, Search } from 'lucide-react';
 import { C, sp, typography } from '../styles/designSystem';
 import PlatformSwitcher from './PlatformSwitcher';
 import FavoritesDropdown from './FavoritesDropdown';
@@ -98,9 +98,9 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
           aria-label="Switch platform"
         >
           <h1 style={{
-            ...typography.h1Large(),
+            fontSize: '24px',
+            fontWeight: 400,
             color: C.neutral[50],
-            letterSpacing: '-0.02em',
             margin: 0,
             fontFamily: 'Orbitron, sans-serif'
           }}>
@@ -108,6 +108,55 @@ const GlobalNavbar = ({ onMenuToggle, isMenuOpen }) => {
           </h1>
           <ChevronDown style={{ width: 16, height: 16, color: C.neutral[300] }} />
         </button>
+      </div>
+
+      {/* Spacer */}
+      <div style={{ flex: 1 }} />
+
+      {/* Centered Search Bar */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: 600,
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        <Search
+          style={{
+            position: 'absolute',
+            left: 12,
+            width: 18,
+            height: 18,
+            color: C.neutral[500],
+            pointerEvents: 'none'
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Search..."
+          style={{
+            width: '100%',
+            height: 38,
+            paddingLeft: 40,
+            paddingRight: sp.md,
+            border: `1px solid ${C.neutral[700]}`,
+            borderRadius: 6,
+            fontSize: '14px',
+            color: C.neutral[100],
+            background: C.neutral[800],
+            outline: 'none',
+            transition: 'all 0.15s',
+            fontFamily: 'Inter, system-ui, sans-serif'
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = C.brand[500];
+            e.currentTarget.style.background = C.neutral[900];
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = C.neutral[700];
+            e.currentTarget.style.background = C.neutral[800];
+          }}
+        />
       </div>
 
       {/* Spacer to push right icons to the end */}

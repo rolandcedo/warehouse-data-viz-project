@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Package, Truck, Grid3X3, ClipboardList, MapPin, AlertTriangle,
   TrendingUp, TrendingDown, ChevronRight, ArrowRight, Activity, CheckCircle,
@@ -22,7 +22,27 @@ import { PredictiveTimeline } from '../../components/Charts';
 // Zones Tab Content - extracted from ZonesView for use in Executive tabs
 const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
   const { contextualTime, isContextualDifferent, interpolateValue } = useTimeContext();
-  
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // ===== COMPOSITE SCORE DATA =====
   // These weights and values calculate the 82 shown on Exec dashboard Zones card
   const scoreComponents = [
@@ -133,9 +153,23 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
   return (
     <>
       <Header icon={MapPin} title="Zones Overview" sub="Physical space utilization, capacity, and throughput across facility" color={C.blueLight[500]} />
-      
-      {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
-      <Card>
+
+      {/* Masonry Container - responsive columns */}
+      <div ref={containerRef} style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+
+        {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
           {/* Score Circle */}
           <div style={{ 
@@ -183,10 +217,19 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
           </span>
         </div>
       </Card>
-      
-      {/* ===== ZONE CATEGORIES ===== */}
-      {zoneCategories.map((cat, catIdx) => (
-        <Card key={cat.id}>
+        </div>
+
+        {/* ===== ZONE CATEGORIES ===== */}
+        {zoneCategories.map((cat, catIdx) => (
+        <div key={`wrapper-${cat.id}`} style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card key={cat.id}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
             <div style={{ width: 32, height: 32, borderRadius: 6, background: `${cat.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <cat.icon style={{ width: 16, height: 16, color: cat.color }} />
@@ -289,10 +332,19 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
             })}
           </div>
         </Card>
-      ))}
-      
-      {/* ===== ON-TIME SHIPPING PERFORMANCE ===== */}
-      <Card>
+        </div>
+        ))}
+
+        {/* ===== ON-TIME SHIPPING PERFORMANCE ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sp.md }}>
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>On-Time Shipping Performance</h3>
@@ -335,9 +387,18 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
           ))}
         </div>
       </Card>
-      
-      {/* ===== CAPACITY TREND ===== */}
-      <Card>
+        </div>
+
+        {/* ===== CAPACITY TREND ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sp.sm }}>
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Overall Capacity Trend</h3>
@@ -354,9 +415,18 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
           <div><span style={{ fontSize: '11px', color: C.neutral[500] }}>Shift End</span><p style={{ fontSize: '14px', fontWeight: 500, color: C.success[600] }}>72%</p></div>
         </div>
       </Card>
-      
-      {/* ===== PREDICTIVE ALERTS ===== */}
-      <Card style={{ borderLeft: `4px solid ${C.blueLight[500]}` }}>
+        </div>
+
+        {/* ===== PREDICTIVE ALERTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card style={{ borderLeft: `4px solid ${C.blueLight[500]}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
           <div style={{ width: 32, height: 32, borderRadius: 6, background: C.blueLight[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap style={{ width: 16, height: 16, color: C.blueLight[600] }} />
@@ -383,6 +453,9 @@ const ZonesTabContent = ({ onZone, onViewInsights, onNavigateToAlert }) => {
           View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
         </div>
       </Card>
+        </div>
+
+      </div>
     </>
   );
 };

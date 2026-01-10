@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Users, TrendingUp, TrendingDown, AlertTriangle, ChevronRight,
   ArrowRight, Activity, Clock, UserCheck, UserX, Zap
@@ -21,7 +21,27 @@ import { PredictiveTimeline } from '../../components/Charts';
 // Staff Tab Content - facility-level staff overview
 const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigateToAlert, onNavigateToStaff }) => {
   const { contextualTime, isContextualDifferent, isContextualPast, interpolateValue } = useTimeContext();
-  
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // Composite score breakdown - these weights and values calculate the 78 shown on Exec dashboard
   const scoreComponents = [
     { label: 'Headcount vs Plan', value: 87, target: 100, weight: 25, detail: '42/48 FTE', status: 'warning' },
@@ -121,9 +141,23 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
   return (
     <>
       <Header icon={Users} title="Staff Overview" sub="Labor capacity, productivity, allocation across facility" color={C.purple[500]} />
-      
-      {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
-      <Card>
+
+      {/* Masonry Container - responsive columns */}
+      <div ref={containerRef} style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+
+        {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
           {/* Score Circle */}
           <div style={{ 
@@ -171,9 +205,18 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           </span>
         </div>
       </Card>
-      
-      {/* ===== UPLH BY FUNCTION ===== */}
-      <Card>
+        </div>
+
+        {/* ===== UPLH BY FUNCTION ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Productivity by Function (UPLH)</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Units per labor hour by job function • Higher is better</p>
@@ -206,9 +249,18 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           })}
         </div>
       </Card>
-      
-      {/* ===== ZONE ALLOCATION HEATMAP ===== */}
-      <Card>
+        </div>
+
+        {/* ===== ZONE ALLOCATION HEATMAP ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ marginBottom: sp.md }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
@@ -289,9 +341,18 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           })}
         </div>
       </Card>
-      
-      {/* ===== WORKFORCE MIX + HEADCOUNT FORECAST (single full-width card) ===== */}
-      <Card>
+        </div>
+
+        {/* ===== WORKFORCE MIX + HEADCOUNT FORECAST (single full-width card) ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', gap: sp.lg }}>
           {/* Workforce Mix - Left side */}
           <div style={{ width: 220, flexShrink: 0, borderRight: `1px solid ${C.neutral[200]}`, paddingRight: sp.lg }}>
@@ -341,10 +402,19 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           </div>
         </div>
       </Card>
-      
-      {/* ===== STAFF ROSTER WITH ATTENDANCE FILTERS ===== */}
-      {/* Staff Roster - Using DataGrid */}
-      <DataGrid 
+        </div>
+
+        {/* ===== STAFF ROSTER WITH ATTENDANCE FILTERS ===== */}
+        {/* Staff Roster - Using DataGrid */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <DataGrid 
         title="Staff Roster" 
         subtitle="All employees • Filter by shift, role, or status" 
         columns={staffColumns} 
@@ -362,9 +432,18 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           }
         }}
       />
-      
-      {/* ===== PREDICTIVE ALERTS ===== */}
-      <Card style={{ borderLeft: `4px solid ${C.purple[500]}` }}>
+        </div>
+
+        {/* ===== PREDICTIVE ALERTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card style={{ borderLeft: `4px solid ${C.purple[500]}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
           <div style={{ width: 32, height: 32, borderRadius: 6, background: C.purple[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Zap style={{ width: 16, height: 16, color: C.purple[600] }} /></div>
           <div><h3 style={{ fontSize: '16px', fontWeight: 500 }}>Analysis</h3><p style={{ fontSize: '12px', color: C.neutral[500] }}>Root causes and recommendations for staffing • Click for details</p></div>
@@ -392,6 +471,9 @@ const StaffTabContent = ({ onViewInsights, initialShiftFilter = null, onNavigate
           View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
         </div>
       </Card>
+        </div>
+
+      </div>
     </>
   );
 };

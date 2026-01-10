@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Package, Truck, ClipboardList, TrendingUp, TrendingDown, AlertTriangle,
   ChevronRight, ChevronDown, ArrowRight, Activity, Clock, Zap, CheckCircle,
@@ -22,7 +22,27 @@ import { Card, Badge, Alert, Header } from '../../components/UI';
 const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }) => {
   const { contextualTime, isContextualDifferent, interpolateValue } = useTimeContext();
   const [expandedCarrier, setExpandedCarrier] = useState(null);
-  
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // ===== COMPOSITE SCORE DATA =====
   // These weights and values calculate the 88 shown on Exec dashboard Work Content card
   const scoreComponents = [
@@ -161,9 +181,23 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
   return (
     <>
       <Header icon={ClipboardList} title="Work Content Overview" sub="Task volume, queues, completion across facility" color={C.orange[500]} />
-      
-      {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
-      <Card>
+
+      {/* Masonry Container - responsive columns */}
+      <div ref={containerRef} style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+
+        {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
           {/* Score Circle */}
           <div style={{ 
@@ -211,9 +245,18 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           </span>
         </div>
       </Card>
-      
-      {/* ===== ORDERS & UNITS SUMMARY ===== */}
-      <Card>
+        </div>
+
+        {/* ===== ORDERS & UNITS SUMMARY ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Today's Volume</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Order and unit throughput • Current → End-of-day prediction</p>
@@ -254,9 +297,18 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           </div>
         </div>
       </Card>
-      
-      {/* ===== QUEUE HEALTH SUMMARY ===== */}
-      <Card>
+        </div>
+
+        {/* ===== QUEUE HEALTH SUMMARY ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sp.md }}>
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Queue Health</h3>
@@ -337,9 +389,18 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           })}
         </div>
       </Card>
-      
-      {/* ===== THROUGHPUT BY FUNCTION - Deviation Chart ===== */}
-      <Card>
+        </div>
+
+        {/* ===== THROUGHPUT BY FUNCTION - Deviation Chart ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Throughput by Function</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Deviation from target velocity • Left = under, Right = over</p>
@@ -464,9 +525,18 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           <span style={{ fontSize: '9px', color: C.neutral[400] }}>+30%</span>
         </div>
       </Card>
-      
-      {/* ===== CARRIER CUTOFF TRACKER ===== */}
-      <Card>
+        </div>
+
+        {/* ===== CARRIER CUTOFF TRACKER ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Carrier Cutoffs</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Progress toward carrier pickup deadlines • Click to expand details</p>
@@ -688,9 +758,18 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           })}
         </div>
       </Card>
-      
-      {/* ===== PREDICTIVE ALERTS ===== */}
-      <Card style={{ borderLeft: `4px solid ${C.orange[500]}` }}>
+        </div>
+
+        {/* ===== PREDICTIVE ALERTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card style={{ borderLeft: `4px solid ${C.orange[500]}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
           <div style={{ width: 32, height: 32, borderRadius: 6, background: C.orange[50], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap style={{ width: 16, height: 16, color: C.orange[500] }} />
@@ -723,6 +802,9 @@ const WorkTabContent = ({ onNavigateToZones, onViewInsights, onNavigateToAlert }
           View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
         </div>
       </Card>
+        </div>
+
+      </div>
     </>
   );
 };

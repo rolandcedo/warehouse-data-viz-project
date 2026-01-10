@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Truck, Package, Users, Wrench, AlertTriangle, TrendingUp, TrendingDown,
   ChevronRight, Activity, Clock, CheckCircle, Fuel, Zap, Calendar, ArrowRight, Lightbulb
@@ -19,6 +19,26 @@ import { Card, Badge, Alert, Header, DataGrid } from '../../components/UI';
 
 // Equipment Tab Content - facility-level equipment overview
 const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipment }) => {
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // Fleet summary data
   const fleetSummary = {
     totalUnits: 32,
@@ -219,9 +239,23 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
   return (
     <>
       <Header icon={Wrench} title="Asset Health" sub="Material handling equipment fleet status and maintenance" color={C.neutral[500]} />
-      
-      {/* Fleet Availability Summary */}
-      <Card>
+
+      {/* Masonry Container - responsive columns */}
+      <div ref={containerRef} style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+
+        {/* ===== FLEET AVAILABILITY SUMMARY ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: sp.md }}>
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Fleet Availability</h3>
@@ -272,10 +306,19 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
             );
           })}
         </div>
-      </Card>
-      
-      {/* Fleet by Type - Full Width */}
-      <Card>
+          </Card>
+        </div>
+
+        {/* ===== FLEET BY TYPE ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <h3 style={{ fontSize: '14px', fontWeight: 500, marginBottom: sp.md }}>Fleet by Equipment Type</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: sp.sm }}>
           {fleetByType.map((fleet, i) => {
@@ -337,10 +380,19 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
             );
           })}
         </div>
-      </Card>
-      
-      {/* Analysis - Full Width */}
-      <Card>
+          </Card>
+        </div>
+
+        {/* ===== EQUIPMENT ALERTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sp.md }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <Lightbulb style={{ width: 16, height: 16, color: C.neutral[500] }} />
@@ -376,10 +428,19 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
           <span>View Full Analysis</span>
           <ArrowRight style={{ width: 14, height: 14 }} />
         </div>
-      </Card>
-      
-      {/* Maintenance Schedule - Full Width */}
-      <Card>
+          </Card>
+        </div>
+
+        {/* ===== MAINTENANCE SCHEDULE ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sp.md }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <Calendar style={{ width: 16, height: 16, color: C.neutral[500] }} />
@@ -417,10 +478,19 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
             </div>
           ))}
         </div>
-      </Card>
-      
-      {/* Charging Status - Full Width */}
-      <Card>
+          </Card>
+        </div>
+
+        {/* ===== CHARGING STATIONS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sp.md }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm }}>
             <Zap style={{ width: 16, height: 16, color: C.brand[500] }} />
@@ -475,10 +545,19 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
             OP-02 (52%), EPJ-08 (55%), RT-03 (58%) - Consider scheduling charging during next break
           </p>
         </div>
-      </Card>
-      
-      {/* Equipment Inventory - Using DataGrid */}
-      <DataGrid 
+          </Card>
+        </div>
+
+        {/* ===== EQUIPMENT INVENTORY ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <DataGrid 
         title="Equipment Inventory" 
         subtitle="All MHE units" 
         columns={equipColumns} 
@@ -494,7 +573,10 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
             onSelectEquipment(row.id, `${row.id} — ${row.type}`);
           }
         }}
-      />
+          />
+        </div>
+
+      </div>
     </>
   );
 };

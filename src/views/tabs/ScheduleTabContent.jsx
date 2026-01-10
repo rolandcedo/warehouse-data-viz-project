@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Calendar, Users, Truck, Package, Wrench, Coffee, Clock,
   TrendingUp, TrendingDown, AlertTriangle, ChevronRight, ChevronDown,
@@ -26,7 +26,27 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
   const [expandedAppointment, setExpandedAppointment] = useState(null);
   const [expandedOutboundDock, setExpandedOutboundDock] = useState(null);
   const [expandedCarrierPickup, setExpandedCarrierPickup] = useState(null);
-  
+
+  // Track container width for responsive masonry layout (shared across all sub-tabs)
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // ===== STAFFING TAB DATA =====
   const staffingScoreComponents = [
     { label: 'Shift Coverage', value: 88, target: 100, weight: 30, detail: '42/48 FTE on Day Shift', status: 'warning' },
@@ -143,9 +163,21 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
       
       {/* ===== STAFFING SUB-TAB ===== */}
       {scheduleSubTab === 'staffing' && (
-        <>
-        {/* Composite Score Breakdown */}
-        <Card>
+        <div ref={containerRef} style={{
+          columnCount: columnCount,
+          columnGap: sp.lg
+        }}>
+
+          {/* ===== COMPOSITE SCORE BREAKDOWN ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
             <div style={{ 
               width: 100, height: 100, borderRadius: '50%', 
@@ -189,10 +221,19 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
               Shift Coverage gap (6 FTE) contributing to velocity shortfall.
             </span>
           </div>
-        </Card>
-        
-        {/* Today's Shifts */}
-      <Card>
+            </Card>
+          </div>
+
+          {/* ===== TODAY'S SHIFTS ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Today's Shifts</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Shift progress, staffing, and throughput • Click to view staff</p>
@@ -279,10 +320,19 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             );
           })}
         </div>
-      </Card>
-      
-      {/* ===== UPCOMING EVENTS TIMELINE ===== */}
-      <Card>
+            </Card>
+          </div>
+
+          {/* ===== UPCOMING EVENTS TIMELINE ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Upcoming Events</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Breaks, cutoffs, and handoffs for next 6 hours • Click for details</p>
@@ -343,10 +393,19 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             );
           })}
         </div>
-      </Card>
-      
-      {/* ===== CARRIER CUTOFFS ===== */}
-      <Card>
+            </Card>
+          </div>
+
+          {/* ===== CARRIER CUTOFFS ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Carrier Cutoffs</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Progress and velocity toward pickup deadlines • Click for details</p>
@@ -420,10 +479,19 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             View All Work Content <ChevronRight style={{ width: 14, height: 14 }} />
           </span>
         </div>
-      </Card>
-      
-      {/* ===== BREAK SCHEDULE ===== */}
-      <Card>
+            </Card>
+          </div>
+
+          {/* ===== BREAK SCHEDULE ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
         <div style={{ marginBottom: sp.md }}>
           <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Break Schedule</h3>
           <p style={{ fontSize: '12px', color: C.neutral[500] }}>Upcoming breaks and coverage impact</p>
@@ -451,10 +519,19 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             </div>
           ))}
         </div>
-      </Card>
-      
-      {/* ===== PREDICTIVE ALERTS ===== */}
-      <Card style={{ borderLeft: `4px solid ${C.greenLight[500]}` }}>
+            </Card>
+          </div>
+
+          {/* ===== PREDICTIVE ALERTS ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card style={{ borderLeft: `4px solid ${C.greenLight[500]}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
           <div style={{ width: 32, height: 32, borderRadius: 6, background: C.greenLight[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap style={{ width: 16, height: 16, color: C.greenLight[600] }} />
@@ -486,15 +563,29 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
         >
           View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
         </div>
-      </Card>
-      </>
+            </Card>
+          </div>
+
+        </div>
       )}
       
       {/* ===== INBOUND SUB-TAB ===== */}
       {scheduleSubTab === 'inbound' && (
-        <>
-        {/* Inbound Score Breakdown */}
-        <Card>
+        <div ref={containerRef} style={{
+          columnCount: columnCount,
+          columnGap: sp.lg
+        }}>
+
+          {/* ===== INBOUND SCORE BREAKDOWN ===== */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
+            <Card>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
             <div style={{ 
               width: 100, height: 100, borderRadius: '50%', 
@@ -559,8 +650,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             </span>
           </div>
         </Card>
-        
-        {/* Dock Door Status */}
+          </div>
+
+          {/* Dock Door Status */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="inbound-docks">
           <div style={{ marginBottom: sp.md }}>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Dock Door Status</h3>
@@ -765,8 +865,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             );
           })()}
         </Card>
-        
-        {/* Today's Dock Appointments */}
+          </div>
+
+          {/* Today's Dock Appointments */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="inbound-appointments">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
             <div>
@@ -968,8 +1077,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             })}
           </div>
         </Card>
-        
-        {/* Inbound Analysis */}
+          </div>
+
+          {/* Inbound Analysis */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card style={{ borderLeft: `4px solid ${C.blueLight[500]}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
             <div style={{ width: 32, height: 32, borderRadius: 6, background: C.blueLight[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -995,9 +1113,9 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
               onClick={() => onNavigateToAlert && onNavigateToAlert('inbound-afternoon-light', 'schedules', true)}
             />
           </div>
-          <div 
+          <div
             onClick={() => onViewInsights && onViewInsights()}
-            style={{ 
+            style={{
               marginTop: sp.md, paddingTop: sp.md, borderTop: `1px solid ${C.neutral[200]}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: sp.xs,
               cursor: 'pointer', color: C.blueLight[600], fontSize: '13px', fontWeight: 500
@@ -1008,13 +1126,26 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
           </div>
         </Card>
-        </>
+          </div>
+        </div>
       )}
-      
+
       {/* ===== OUTBOUND SUB-TAB ===== */}
       {scheduleSubTab === 'outbound' && (
-        <>
-        {/* Outbound Score Breakdown */}
+        <div ref={containerRef} style={{
+          columnCount: columnCount,
+          columnGap: sp.lg
+        }}>
+
+          {/* Outbound Score Breakdown */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
             <div style={{ 
@@ -1080,8 +1211,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             </span>
           </div>
         </Card>
-        
-        {/* Shipping Dock Status */}
+          </div>
+
+          {/* Shipping Dock Status */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="outbound-docks">
           <div style={{ marginBottom: sp.md }}>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Shipping Dock Status</h3>
@@ -1276,8 +1416,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             );
           })()}
         </Card>
-        
-        {/* Carrier Pickup Schedule */}
+          </div>
+
+          {/* Carrier Pickup Schedule */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="outbound-pickups">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
             <div>
@@ -1571,8 +1720,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             </span>
           </div>
         </Card>
-        
-        {/* Outbound Analysis */}
+          </div>
+
+          {/* Outbound Analysis */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card style={{ borderLeft: `4px solid ${C.orange[500]}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
             <div style={{ width: 32, height: 32, borderRadius: 6, background: C.orange[50], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1598,9 +1756,9 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
               onClick={() => onNavigateToAlert && onNavigateToAlert('outbound-fedex-ground-ok', 'schedules', true)}
             />
           </div>
-          <div 
+          <div
             onClick={() => onViewInsights && onViewInsights()}
-            style={{ 
+            style={{
               marginTop: sp.md, paddingTop: sp.md, borderTop: `1px solid ${C.neutral[200]}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: sp.xs,
               cursor: 'pointer', color: C.orange[600], fontSize: '13px', fontWeight: 500
@@ -1611,13 +1769,26 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
           </div>
         </Card>
-        </>
+          </div>
+        </div>
       )}
-      
+
       {/* ===== MAINTENANCE SUB-TAB ===== */}
       {scheduleSubTab === 'maintenance' && (
-        <>
-        {/* Maintenance Score Breakdown */}
+        <div ref={containerRef} style={{
+          columnCount: columnCount,
+          columnGap: sp.lg
+        }}>
+
+          {/* Maintenance Score Breakdown */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: sp.lg, marginBottom: sp.md }}>
             <div style={{ 
@@ -1683,8 +1854,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             </span>
           </div>
         </Card>
-        
-        {/* Today's Maintenance Schedule */}
+          </div>
+
+          {/* Today's Maintenance Schedule */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="maint-schedule">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
             <div>
@@ -1782,8 +1962,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             })}
           </div>
         </Card>
-        
-        {/* Equipment PM Status Grid */}
+          </div>
+
+          {/* Equipment PM Status Grid */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card id="maint-pm-grid">
           <div style={{ marginBottom: sp.md }}>
             <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Equipment PM Status</h3>
@@ -1860,8 +2049,17 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             })}
           </div>
         </Card>
-        
-        {/* Maintenance Analysis */}
+          </div>
+
+          {/* Maintenance Analysis */}
+          <div style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid',
+            WebkitColumnBreakInside: 'avoid',
+            marginBottom: sp.lg,
+            display: 'inline-block',
+            width: '100%'
+          }}>
         <Card style={{ borderLeft: `4px solid ${C.neutral[500]}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: sp.sm, marginBottom: sp.md }}>
             <div style={{ width: 32, height: 32, borderRadius: 6, background: C.neutral[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1887,9 +2085,9 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
               onClick={() => onNavigateToAlert && onNavigateToAlert('maint-fleet-health', 'schedules', true)}
             />
           </div>
-          <div 
+          <div
             onClick={() => onViewInsights && onViewInsights()}
-            style={{ 
+            style={{
               marginTop: sp.md, paddingTop: sp.md, borderTop: `1px solid ${C.neutral[200]}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: sp.xs,
               cursor: 'pointer', color: C.neutral[600], fontSize: '13px', fontWeight: 500
@@ -1900,7 +2098,8 @@ const ScheduleTabContent = ({ onViewInsights, onNavigateToStaff, onNavigateToWor
             View Full Analysis <ChevronRight style={{ width: 16, height: 16 }} />
           </div>
         </Card>
-        </>
+          </div>
+        </div>
       )}
     </>
   );

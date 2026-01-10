@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Users, MapPin, Package, Truck, Settings, MoreHorizontal,
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, ChevronRight, CheckCircle
@@ -18,7 +18,27 @@ import { Card } from '../../components/UI';
 const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCostCategory }) => {
   const [financialPeriod, setFinancialPeriod] = React.useState('mtd');
   const [financialComparison, setFinancialComparison] = React.useState('budget');
-  
+
+  // Track container width for responsive masonry layout
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Determine column count based on container width (not window width)
+  const columnCount = containerWidth >= 2200 ? 3 : (containerWidth >= 992 ? 2 : 1);
+
   // Financial Mock Data
   const financialData = {
     periods: {
@@ -122,7 +142,7 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
   const isUnfavorable = variance > 0;
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: sp.md }}>
+    <>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: sp.md, marginBottom: sp.sm }}>
         <div style={{ width: 36, height: 36, borderRadius: 8, background: C.success[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -175,56 +195,83 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
           </select>
         </div>
       </div>
+
+      {/* Masonry Container - responsive columns */}
+      <div ref={containerRef} style={{
+        columnCount: columnCount,
+        columnGap: sp.lg
+      }}>
+
+        {/* ===== KEY FINANCIAL METRICS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
+            <h3 style={{ fontSize: '14px', fontWeight: 500, marginBottom: sp.md }}>Key Financial Metrics</h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sp.sm }}>
+              {/* Total Operating Costs */}
+              <Card>
+                <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Total Operating Costs</p>
+                <p style={{ fontSize: '22px', fontWeight: 500, margin: 0 }}>{formatCurrency(periodData.totalOpEx)}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                  {isUnfavorable ?
+                    <TrendingUp style={{ width: 12, height: 12, color: C.error[500] }} /> :
+                    <TrendingDown style={{ width: 12, height: 12, color: C.success[500] }} />
+                  }
+                  <span style={{ fontSize: '11px', color: isUnfavorable ? C.error[600] : C.success[600] }}>
+                    {isUnfavorable ? '+' : ''}{variancePct}% vs {comparisonLabel.toLowerCase()}
+                  </span>
+                </div>
+              </Card>
+
+              {/* Cost Per Order */}
+              <Card>
+                <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Cost Per Order</p>
+                <p style={{ fontSize: '22px', fontWeight: 500, margin: 0, color: periodData.costPerOrder > periodData.costPerOrderBudget ? C.warning[600] : C.success[600] }}>
+                  ${periodData.costPerOrder.toFixed(2)}
+                </p>
+                <p style={{ fontSize: '10px', color: C.neutral[400] }}>Target: ${periodData.costPerOrderBudget.toFixed(2)}</p>
+              </Card>
+
+              {/* Budget Variance */}
+              <Card style={{ borderLeft: `4px solid ${isUnfavorable ? C.error[500] : C.success[500]}` }}>
+                <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Budget Variance</p>
+                <p style={{ fontSize: '22px', fontWeight: 500, margin: 0, color: isUnfavorable ? C.error[600] : C.success[600] }}>
+                  {isUnfavorable ? '+' : ''}{formatCurrency(Math.abs(variance))}
+                </p>
+                <p style={{ fontSize: '10px', color: isUnfavorable ? C.error[500] : C.success[500] }}>
+                  {isUnfavorable ? 'Over budget' : 'Under budget'}
+                </p>
+              </Card>
+
+              {/* EOM Forecast */}
+              <Card>
+                <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>EOM Forecast</p>
+                <p style={{ fontSize: '22px', fontWeight: 500, margin: 0 }}>{formatCurrency(periodData.forecast)}</p>
+                <p style={{ fontSize: '10px', color: periodData.forecast > periodData.forecastBudget ? C.warning[500] : C.success[500] }}>
+                  Budget: {formatCurrency(periodData.forecastBudget)}
+                </p>
+              </Card>
+            </div>
+          </Card>
+        </div>
       
-      {/* Summary Cards Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sp.sm }}>
-        {/* Total OpEx */}
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Total Operating Costs</p>
-          <p style={{ fontSize: '22px', fontWeight: 500, margin: 0 }}>{formatCurrency(periodData.totalOpEx)}</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-            {isUnfavorable ? 
-              <TrendingUp style={{ width: 12, height: 12, color: C.error[500] }} /> :
-              <TrendingDown style={{ width: 12, height: 12, color: C.success[500] }} />
-            }
-            <span style={{ fontSize: '11px', color: isUnfavorable ? C.error[600] : C.success[600] }}>
-              {isUnfavorable ? '+' : ''}{variancePct}% vs {comparisonLabel.toLowerCase()}
-            </span>
-          </div>
-        </Card>
-        
-        {/* Cost Per Order */}
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Cost Per Order</p>
-          <p style={{ fontSize: '22px', fontWeight: 500, margin: 0, color: periodData.costPerOrder > periodData.costPerOrderBudget ? C.warning[600] : C.success[600] }}>
-            ${periodData.costPerOrder.toFixed(2)}
-          </p>
-          <p style={{ fontSize: '10px', color: C.neutral[400] }}>Target: ${periodData.costPerOrderBudget.toFixed(2)}</p>
-        </Card>
-        
-        {/* Budget Variance */}
-        <Card style={{ borderLeft: `4px solid ${isUnfavorable ? C.error[500] : C.success[500]}` }}>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Budget Variance</p>
-          <p style={{ fontSize: '22px', fontWeight: 500, margin: 0, color: isUnfavorable ? C.error[600] : C.success[600] }}>
-            {isUnfavorable ? '+' : ''}{formatCurrency(Math.abs(variance))}
-          </p>
-          <p style={{ fontSize: '10px', color: isUnfavorable ? C.error[500] : C.success[500] }}>
-            {isUnfavorable ? 'Over budget' : 'Under budget'}
-          </p>
-        </Card>
-        
-        {/* Forecast */}
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>EOM Forecast</p>
-          <p style={{ fontSize: '22px', fontWeight: 500, margin: 0 }}>{formatCurrency(periodData.forecast)}</p>
-          <p style={{ fontSize: '10px', color: periodData.forecast > periodData.forecastBudget ? C.warning[500] : C.success[500] }}>
-            Budget: {formatCurrency(periodData.forecastBudget)}
-          </p>
-        </Card>
-      </div>
-      
-      {/* Cost Breakdown */}
-      <Card>
+        {/* ===== COST BREAKDOWN ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
           <h3 style={{ fontSize: '14px', fontWeight: 500, margin: 0 }}>Cost Breakdown</h3>
           <span style={{ fontSize: '11px', color: C.neutral[500] }}>{periodInfo.label}</span>
@@ -332,12 +379,19 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
             );
           })}
         </div>
-      </Card>
+          </Card>
+        </div>
       
-      {/* Cost Trends */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sp.md }}>
-        {/* Monthly OpEx Trend */}
-        <Card>
+        {/* ===== MONTHLY OPERATING COSTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
           <h3 style={{ fontSize: '14px', fontWeight: 500, marginBottom: sp.md }}>Monthly Operating Costs</h3>
           <div style={{ height: 120, display: 'flex', alignItems: 'flex-end', gap: sp.xs }}>
             {financialData.monthlyTrend.map((month, i) => {
@@ -375,10 +429,19 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
               <span style={{ fontSize: '10px', color: C.neutral[500] }}>Budget</span>
             </div>
           </div>
-        </Card>
-        
-        {/* Cost Per Order Trend */}
-        <Card>
+          </Card>
+        </div>
+
+        {/* ===== COST PER ORDER TREND ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
           <h3 style={{ fontSize: '14px', fontWeight: 500, marginBottom: sp.md }}>Cost Per Order Trend</h3>
           <div style={{ height: 120, position: 'relative' }}>
             {/* Target line */}
@@ -436,11 +499,19 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
               ))}
             </div>
           </div>
-        </Card>
-      </div>
-      
-      {/* Financial Alerts */}
-      <Card>
+          </Card>
+        </div>
+
+        {/* ===== ALERTS & INSIGHTS ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: sp.md }}>
           <h3 style={{ fontSize: '14px', fontWeight: 500, margin: 0 }}>Alerts & Insights</h3>
           <button
@@ -495,29 +566,61 @@ const FinancialTabContent = ({ onViewInsights, onNavigateToAlert, onNavigateToCo
             </div>
           ))}
         </div>
-      </Card>
-      
-      {/* Additional Metrics Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sp.sm }}>
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Orders Processed</p>
-          <p style={{ fontSize: '20px', fontWeight: 500, margin: 0 }}>{periodData.ordersProcessed.toLocaleString()}</p>
-          <p style={{ fontSize: '10px', color: C.neutral[400] }}>{periodInfo.label}</p>
-        </Card>
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Units Handled</p>
-          <p style={{ fontSize: '20px', fontWeight: 500, margin: 0 }}>{periodData.unitsHandled.toLocaleString()}</p>
-          <p style={{ fontSize: '10px', color: C.neutral[400] }}>{periodInfo.label}</p>
-        </Card>
-        <Card>
-          <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Fulfillment % of Revenue</p>
-          <p style={{ fontSize: '20px', fontWeight: 500, margin: 0, color: periodData.fulfillmentPctRevenue > 14 ? C.warning[600] : C.success[600] }}>
-            {periodData.fulfillmentPctRevenue}%
-          </p>
-          <p style={{ fontSize: '10px', color: C.neutral[400] }}>Target: &lt;14%</p>
-        </Card>
+          </Card>
+        </div>
+
+        {/* ===== ORDERS PROCESSED ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
+            <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Orders Processed</p>
+            <p style={{ fontSize: '20px', fontWeight: 500, margin: 0 }}>{periodData.ordersProcessed.toLocaleString()}</p>
+            <p style={{ fontSize: '10px', color: C.neutral[400] }}>{periodInfo.label}</p>
+          </Card>
+        </div>
+
+        {/* ===== UNITS HANDLED ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
+            <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Units Handled</p>
+            <p style={{ fontSize: '20px', fontWeight: 500, margin: 0 }}>{periodData.unitsHandled.toLocaleString()}</p>
+            <p style={{ fontSize: '10px', color: C.neutral[400] }}>{periodInfo.label}</p>
+          </Card>
+        </div>
+
+        {/* ===== FULFILLMENT % OF REVENUE ===== */}
+        <div style={{
+          breakInside: 'avoid',
+          pageBreakInside: 'avoid',
+          WebkitColumnBreakInside: 'avoid',
+          marginBottom: sp.lg,
+          display: 'inline-block',
+          width: '100%'
+        }}>
+          <Card>
+            <p style={{ fontSize: '10px', color: C.neutral[500], marginBottom: 2 }}>Fulfillment % of Revenue</p>
+            <p style={{ fontSize: '20px', fontWeight: 500, margin: 0, color: periodData.fulfillmentPctRevenue > 14 ? C.warning[600] : C.success[600] }}>
+              {periodData.fulfillmentPctRevenue}%
+            </p>
+            <p style={{ fontSize: '10px', color: C.neutral[400] }}>Target: &lt;14%</p>
+          </Card>
+        </div>
+
       </div>
-    </div>
+    </>
   );
 };
 
