@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Package, LayoutDashboard, ClipboardList, Users, MapPin,
-  Calendar, DollarSign, Lightbulb, Filter, Info, Hammer, Truck
+  Calendar, DollarSign, Lightbulb, Filter, Info, Hammer, Truck, Warehouse
 } from 'lucide-react';
 
 // Context
@@ -120,9 +120,9 @@ const AppContent = () => {
     { id: 'staff', icon: Users, label: 'Staff' },
     { id: 'work', icon: Hammer, label: 'Work Content' },
     { id: 'zones', icon: MapPin, label: 'Zones' },
-    { id: 'equipment', icon: Truck, label: 'Equipment' },
     { id: 'schedule', icon: Calendar, label: 'Schedule' },
     { id: 'financial', icon: DollarSign, label: 'Financial' },
+    { id: 'equipment', icon: Warehouse, label: 'Equipment' },
     { id: 'insights', icon: Lightbulb, label: 'Insights' },
     { id: 'plans', icon: ClipboardList, label: 'Plans' },
     { id: 'config', icon: Filter, label: 'Config' }

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Truck, Package, Users, Wrench, AlertTriangle, TrendingUp, TrendingDown,
+  Truck, Package, Users, Warehouse, Wrench, AlertTriangle, TrendingUp, TrendingDown,
   ChevronRight, Activity, Clock, CheckCircle, Fuel, Zap, Calendar, ArrowRight, Lightbulb
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
@@ -238,7 +238,7 @@ const EquipmentTabContent = ({ onViewInsights, onNavigateToAlert, onSelectEquipm
 
   return (
     <>
-      <Header icon={Wrench} title="Asset Health" sub="Material handling equipment fleet status and maintenance" color={C.neutral[500]} />
+      <Header icon={Warehouse} title="Equipment" sub="Material handling equipment fleet status and maintenance" color={C.neutral[500]} />
 
       {/* Masonry Container - responsive columns */}
       <div ref={containerRef} style={{

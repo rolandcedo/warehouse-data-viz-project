@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Users, MapPin, ClipboardList, Calendar, DollarSign, ChevronRight, ChevronLeft, 
   ChevronDown, Clock, Package, Truck, AlertTriangle, ArrowRight, ArrowUpRight, 
-  ArrowDownRight, Zap, Sun, Moon, Star, UserCheck, UserX, UserPlus, Wrench, 
+  ArrowDownRight, Zap, Sun, Moon, Star, UserCheck, UserX, UserPlus, Warehouse, Wrench, 
   CheckCircle, Info, AlertOctagon, LayoutDashboard, Radio, TrendingUp, TrendingDown, 
   Search, Filter, X, RotateCcw, GripVertical, Grid3X3, BoxSelect, Lightbulb, 
   Coffee, MoreVertical, MoreHorizontal, Eye, RefreshCw, MapPinIcon, Settings, 
@@ -562,9 +562,9 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
     { id: 'staff', icon: Users, label: 'Staff' },
     { id: 'work', icon: Package, label: 'Work Content' },
     { id: 'zones', icon: MapPin, label: 'Zones' },
-    { id: 'equipment', icon: Wrench, label: 'Equipment' },
     { id: 'schedule', icon: Calendar, label: 'Schedule' },
     { id: 'financial', icon: DollarSign, label: 'Financial' },
+    { id: 'equipment', icon: Warehouse, label: 'Equipment' },
     { id: 'insights', icon: Lightbulb, label: 'Insights' },
     { id: 'config', icon: Filter, label: 'Config' }
   ];
@@ -586,7 +586,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
   const staffTabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'performance', icon: TrendingUp, label: 'Performance' },
-    { id: 'equipment', icon: Truck, label: 'Equipment' },
+    { id: 'equipment', icon: Warehouse, label: 'Equipment' },
     { id: 'schedule', icon: Calendar, label: 'Schedule' },
     { id: 'certifications', icon: ClipboardList, label: 'Certifications' },
     { id: 'safety', icon: AlertTriangle, label: 'Safety' },
@@ -602,7 +602,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
     { id: 'staff', icon: Users, label: 'Staff' },
     { id: 'work', icon: Package, label: 'Work' },
     { id: 'zones', icon: MapPin, label: 'Locations' },
-    { id: 'equipment', icon: Truck, label: 'Equipment' },
+    { id: 'equipment', icon: Warehouse, label: 'Equipment' },
     { id: 'schedule', icon: Calendar, label: 'Schedule' },
     { id: 'insights', icon: Lightbulb, label: 'Insights' },
     { id: 'config', icon: Settings, label: 'Config' }
@@ -3018,7 +3018,7 @@ const Executive = ({ onCat, onShift, onZone, activeTab: propActiveTab, setActive
         <div style={{ marginBottom: sp.md }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Asset Health</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: 500 }}>Equipment</h3>
               <p style={{ fontSize: '12px', color: C.neutral[500] }}>
                 Equipment fleet availability and maintenance status
               </p>
